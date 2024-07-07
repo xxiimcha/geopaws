@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1006948978372",
+    "project_id": "geopaws-eaf88",
+    "storage_bucket": "geopaws-eaf88.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006948978372:android:9bad4139215e466ac8c391",
+        "android_client_info": {
+          "package_name": "com.example.geopaws"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_4XuygsUNR-Xlc4nhqNNaGVa7ZZqJ260"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1006948978372:android:e43f128a3febda0fc8c391",
+        "android_client_info": {
+          "package_name": "com.example.geopawsfinal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_4XuygsUNR-Xlc4nhqNNaGVa7ZZqJ260"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
