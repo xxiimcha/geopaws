@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/widgets.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geopawsfinal/adminbottom.dart';
 import 'package:geopawsfinal/adminpetprofile.dart';
 import 'package:geopawsfinal/formpet.dart';
@@ -10,20 +9,129 @@ void main() {
   runApp(const AdminPetPage());
 }
 
-// ignore: camel_case_types
 class AdminPetPage extends StatefulWidget {
   const AdminPetPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _AdminPetPage createState() => _AdminPetPage();
 }
 
-// ignore: camel_case_types
 class _AdminPetPage extends State<AdminPetPage> {
   final _globalKey = GlobalKey<ScaffoldMessengerState>();
   final searchController = TextEditingController();
   String searchQuery = "";
+  String selectedFilter = "Type"; // Default filter
+  String selectedOption = ""; // Selected option for the secondary dropdown
+  List<String> filterOptions = []; // List of options for the selected filter
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFilterOptions(); // Fetch options for the default filter initially
+  }
+
+  Future<void> fetchFilterOptions() async {
+    final filterField = selectedFilter.toLowerCase();
+    final snapshot = await FirebaseFirestore.instance.collection('pet').get();
+    final options = snapshot.docs
+        .map((doc) => doc.data()[filterField].toString())
+        .toSet()
+        .toList();
+    setState(() {
+      filterOptions = options;
+      selectedOption = filterOptions.contains(selectedOption) ? selectedOption : (options.isNotEmpty ? options[0] : "");
+    });
+  }
+
+  void clearFilters() {
+    setState(() {
+      selectedFilter = "Type";
+      selectedOption = "";
+      filterOptions = [];
+      searchController.clear();
+      searchQuery = "";
+      fetchFilterOptions();
+    });
+  }
+
+  void showFilterModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // This makes the modal cover the full screen height
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.5, // Set height to half of the screen
+                decoration: BoxDecoration(
+                  color: Colors.lightBlue[50],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch, // Ensure it takes the full width
+                  children: [
+                    DropdownButton<String>(
+                      value: selectedFilter,
+                      items: <String>['Type', 'Breed', 'Age', 'Color', 'Sex']
+                          .map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedFilter = newValue!;
+                          fetchFilterOptions(); // Fetch new options when filter changes
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    if (filterOptions.isNotEmpty)
+                      DropdownButton<String>(
+                        value: selectedOption.isNotEmpty ? selectedOption : null,
+                        items: filterOptions.map((String option) {
+                          return DropdownMenuItem<String>(
+                            value: option,
+                            child: Text(option),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedOption = newValue!;
+                          });
+                        },
+                      ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Apply Filters'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        clearFilters();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Clear Filters'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,20 +200,31 @@ class _AdminPetPage extends State<AdminPetPage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: searchController,
-                  decoration: InputDecoration(
-                    labelText: "Search Pet",
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          labelText: "Search Pet",
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery = value.toLowerCase();
+                          });
+                        },
+                      ),
                     ),
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      searchQuery = value.toLowerCase();
-                    });
-                  },
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () => showFilterModal(context),
+                      child: const Text('Filter'),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 const Text(
@@ -139,10 +258,10 @@ class _AdminPetPage extends State<AdminPetPage> {
 
                     final filteredData = alldata.where((doc) {
                       final data = doc.data() as Map<String, dynamic>;
-                      final type = data['type'].toString().toLowerCase();
-                      final breed = data['breed'].toString().toLowerCase();
-                      return type.contains(searchQuery) ||
-                          breed.contains(searchQuery);
+                      final fieldValue = (data[selectedFilter.toLowerCase()] ?? '')
+                          .toString()
+                          .toLowerCase();
+                      return fieldValue.contains(selectedOption.toLowerCase());
                     }).toList();
 
                     return ListView.builder(

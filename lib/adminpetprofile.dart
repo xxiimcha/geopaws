@@ -37,8 +37,7 @@ class _AdminPetProfilePage extends State<AdminPetProfilePage> {
     try {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('pet')
-          .doc(widget
-              .docId) // Replace 'your_document_id' with the actual document ID
+          .doc(widget.docId)
           .get();
 
       if (documentSnapshot.exists) {
@@ -54,9 +53,14 @@ class _AdminPetProfilePage extends State<AdminPetProfilePage> {
           sex = userData['sex'] ?? '';
           images = userData['images'] ?? '';
         });
-      } else {}
-      // ignore: empty_catches
-    } catch (e) {}
+      } else {
+        // Document does not exist
+        print('Document does not exist');
+      }
+    } catch (e) {
+      // Error handling for document fetch or data extraction
+      print('Error fetching document: $e');
+    }
   }
 
   @override
@@ -70,174 +74,97 @@ class _AdminPetProfilePage extends State<AdminPetProfilePage> {
             children: [
               GestureDetector(
                 child: const Icon(
-                  Icons.arrow_left,
-                  size: 40,
+                  Icons.arrow_back,
+                  size: 30,
                   color: Colors.white,
                 ),
                 onTap: () {
                   Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AdminPetPage(),
-                      ));
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AdminPetPage(),
+                    ),
+                  );
                 },
               ),
+              const SizedBox(width: 10),
               const Text(
                 'Pet Profile',
                 style: TextStyle(color: Colors.white),
-              )
+              ),
             ],
           ),
         ),
         body: ListView(
+          padding: const EdgeInsets.all(16.0),
           children: [
-            Column(
-              children: [
-                Container(
-                  width: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 5,
+                    offset: const Offset(0, 3),
                   ),
-                  child: Column(
-                    children: [
-                      Image.network(
-                        images,
-                        height: 300,
-                        fit: BoxFit.cover,
-                      ),
-                      const Text(
-                        'Image',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      )
-                    ],
+                ],
+              ),
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(10),
+                    ),
+                    child: Image.network(
+                      images,
+                      height: 300,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 0, 63, 157),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text(
-                            'Type:  $type',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 0, 63, 157),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text('Breed: $breed',
-                              style: const TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ],
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        _buildInfoRow('Type', type),
+                        _buildInfoRow('Breed', breed),
+                        _buildInfoRow('Age', age),
+                        _buildInfoRow('Color', color),
+                        _buildInfoRow('Arrival Date', arrivaldate),
+                        _buildInfoRow('Size Weight', sizeweight),
+                        _buildInfoRow('Sex', sex),
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 0, 63, 157),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text('Age: $age',
-                              style: const TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 0, 63, 157),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text('Color: $color',
-                              style: const TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 0, 63, 157),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text('Arrival Date: $arrivaldate',
-                              style: const TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 30),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 0, 63, 157),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text('Size Weight: $sizeweight',
-                              style: const TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.only(top: 30),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 10),
-                          decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 0, 63, 157),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Text('Sex: $sex',
-                              style: const TextStyle(color: Colors.white)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(margin: const EdgeInsets.only(bottom: 20))
-              ],
-            )
+                ],
+              ),
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '$label:',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 16),
+          ),
+        ],
       ),
     );
   }
