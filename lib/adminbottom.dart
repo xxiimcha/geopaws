@@ -43,7 +43,6 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
     AdminWelcomePage(),
     AdminPetPage(),
     MessagesPage(),
-    AdminProfilePage(),
     AdminFeedbackPage()
   ];
 
@@ -138,13 +137,6 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
                   size: 25,
                 ),
                 label: 'Chat',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.person,
-                  size: 25,
-                ),
-                label: 'Profile',
               ),
               BottomNavigationBarItem(
                 icon: FaIcon(

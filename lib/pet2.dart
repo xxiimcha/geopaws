@@ -24,15 +24,133 @@ class PetPage extends StatefulWidget {
 class _PetPage extends State<PetPage> {
   final searchController = TextEditingController();
   String searchText = "";
+  String selectedFilter = "Type"; // Default filter
+  String selectedOption = "All"; // Default option for the secondary dropdown
+  List<String> filterOptions = ["All"]; // List of options for the selected filter
+
+  String appliedFilter = "Type"; // Applied filter
+  String appliedOption = "All"; // Applied option
 
   @override
   void initState() {
     super.initState();
+    fetchFilterOptions(); // Fetch options for the default filter initially
     searchController.addListener(() {
       setState(() {
         searchText = searchController.text;
       });
     });
+  }
+
+  Future<void> fetchFilterOptions() async {
+    final filterField = selectedFilter.toLowerCase();
+    final snapshot = await FirebaseFirestore.instance.collection('pet').get();
+    final options = snapshot.docs
+        .map((doc) => doc.data()[filterField].toString())
+        .toSet() // Convert to set to remove duplicates
+        .toList();
+    setState(() {
+      filterOptions = ["All", ...options];
+      selectedOption = filterOptions.contains(selectedOption) ? selectedOption : "All";
+    });
+  }
+
+  void clearFilters() {
+    setState(() {
+      selectedFilter = "Type";
+      selectedOption = "All";
+      filterOptions = ["All"];
+      searchController.clear();
+      searchText = "";
+      appliedFilter = "Type";
+      appliedOption = "All";
+      fetchFilterOptions();
+    });
+  }
+
+  void applyFilters() {
+    setState(() {
+      appliedFilter = selectedFilter;
+      appliedOption = selectedOption;
+    });
+    Navigator.pop(context);
+  }
+
+  void showFilterModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // This makes the modal cover the full screen height
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: MediaQuery.of(context).viewInsets,
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.5, // Set height to half of the screen
+                decoration: BoxDecoration(
+                  color: Colors.lightBlue[50],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch, // Ensure it takes the full width
+                  children: [
+                    DropdownButton<String>(
+                      value: selectedFilter,
+                      items: <String>['Type', 'Breed', 'Age', 'Color', 'Sex']
+                          .map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (newValue) {
+                        setState(() {
+                          selectedFilter = newValue!;
+                          fetchFilterOptions(); // Fetch new options when filter changes
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    if (filterOptions.isNotEmpty)
+                      DropdownButton<String>(
+                        value: filterOptions.contains(selectedOption) ? selectedOption : filterOptions[0],
+                        items: filterOptions.map((String option) {
+                          return DropdownMenuItem<String>(
+                            value: option,
+                            child: Text(option),
+                          );
+                        }).toList(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            selectedOption = newValue!;
+                          });
+                        },
+                      ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: applyFilters,
+                      child: const Text('Apply Filters'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        clearFilters();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Clear Filters'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -92,6 +210,10 @@ class _PetPage extends State<PetPage> {
                   ),
                 ),
               ),
+              ElevatedButton(
+                onPressed: () => showFilterModal(context),
+                child: const Text('Filter'),
+              ),
               Container(
                 margin: const EdgeInsets.only(top: 10),
                 child: StreamBuilder<QuerySnapshot>(
@@ -111,14 +233,16 @@ class _PetPage extends State<PetPage> {
                       );
                     }
                     final alldata = snapshot.data!.docs.where((doc) {
-                      return doc['type']
-                          .toString()
-                          .toLowerCase()
-                          .contains(searchText.toLowerCase()) ||
-                          doc['breed']
+                      final data = doc.data() as Map<String, dynamic>;
+                      final matchesFilter = appliedOption == "All" ||
+                          (data[appliedFilter.toLowerCase()] ?? '')
                               .toString()
                               .toLowerCase()
-                              .contains(searchText.toLowerCase());
+                              .contains(appliedOption.toLowerCase());
+                      final matchesSearch = searchText.isEmpty ||
+                          (data['type'] ?? '').toString().toLowerCase().contains(searchText) ||
+                          (data['breed'] ?? '').toString().toLowerCase().contains(searchText);
+                      return matchesFilter && matchesSearch;
                     }).toList();
 
                     if (alldata.isEmpty) {

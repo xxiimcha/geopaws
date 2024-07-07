@@ -21,8 +21,11 @@ class _AdminPetPage extends State<AdminPetPage> {
   final searchController = TextEditingController();
   String searchQuery = "";
   String selectedFilter = "Type"; // Default filter
-  String selectedOption = ""; // Selected option for the secondary dropdown
-  List<String> filterOptions = []; // List of options for the selected filter
+  String selectedOption = "All"; // Default option for the secondary dropdown
+  List<String> filterOptions = ["All"]; // List of options for the selected filter
+
+  String appliedFilter = "Type"; // Applied filter
+  String appliedOption = "All"; // Applied option
 
   @override
   void initState() {
@@ -35,23 +38,33 @@ class _AdminPetPage extends State<AdminPetPage> {
     final snapshot = await FirebaseFirestore.instance.collection('pet').get();
     final options = snapshot.docs
         .map((doc) => doc.data()[filterField].toString())
-        .toSet()
+        .toSet() // Convert to set to remove duplicates
         .toList();
     setState(() {
-      filterOptions = options;
-      selectedOption = filterOptions.contains(selectedOption) ? selectedOption : (options.isNotEmpty ? options[0] : "");
+      filterOptions = ["All", ...options];
+      selectedOption = filterOptions.contains(selectedOption) ? selectedOption : "All";
     });
   }
 
   void clearFilters() {
     setState(() {
       selectedFilter = "Type";
-      selectedOption = "";
-      filterOptions = [];
+      selectedOption = "All";
+      filterOptions = ["All"];
       searchController.clear();
       searchQuery = "";
+      appliedFilter = "Type";
+      appliedOption = "All";
       fetchFilterOptions();
     });
+  }
+
+  void applyFilters() {
+    setState(() {
+      appliedFilter = selectedFilter;
+      appliedOption = selectedOption;
+    });
+    Navigator.pop(context);
   }
 
   void showFilterModal(BuildContext context) {
@@ -93,7 +106,7 @@ class _AdminPetPage extends State<AdminPetPage> {
                     const SizedBox(height: 10),
                     if (filterOptions.isNotEmpty)
                       DropdownButton<String>(
-                        value: selectedOption.isNotEmpty ? selectedOption : null,
+                        value: filterOptions.contains(selectedOption) ? selectedOption : filterOptions[0],
                         items: filterOptions.map((String option) {
                           return DropdownMenuItem<String>(
                             value: option,
@@ -108,9 +121,7 @@ class _AdminPetPage extends State<AdminPetPage> {
                       ),
                     const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+                      onPressed: applyFilters,
                       child: const Text('Apply Filters'),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 15),
@@ -258,10 +269,15 @@ class _AdminPetPage extends State<AdminPetPage> {
 
                     final filteredData = alldata.where((doc) {
                       final data = doc.data() as Map<String, dynamic>;
-                      final fieldValue = (data[selectedFilter.toLowerCase()] ?? '')
-                          .toString()
-                          .toLowerCase();
-                      return fieldValue.contains(selectedOption.toLowerCase());
+                      final matchesFilter = appliedOption == "All" ||
+                          (data[appliedFilter.toLowerCase()] ?? '')
+                              .toString()
+                              .toLowerCase()
+                              .contains(appliedOption.toLowerCase());
+                      final matchesSearch = searchQuery.isEmpty ||
+                          (data['type'] ?? '').toString().toLowerCase().contains(searchQuery) ||
+                          (data['breed'] ?? '').toString().toLowerCase().contains(searchQuery);
+                      return matchesFilter && matchesSearch;
                     }).toList();
 
                     return ListView.builder(
