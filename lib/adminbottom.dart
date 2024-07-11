@@ -39,7 +39,7 @@ class MainAppwidget extends StatefulWidget {
 class MainAppwidgetfooter extends State<MainAppwidget> {
   int selectedindex = 0;
 
-  static const List widgetoption = [
+  static const List<Widget> widgetoption = [
     AdminWelcomePage(),
     AdminPetPage(),
     MessagesPage(),
@@ -47,20 +47,12 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
   ];
 
   void onitemtapped(int index) {
-    if (index == 5) {
+    if (index == 4) { // Adjusted index for Logout since Profile is removed
       _showLogoutDialog(context);
     } else {
       setState(() {
         selectedindex = index;
       });
-
-      if (selectedindex == 1) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: ((context) => const AdminPetPage())));
-      } else if (selectedindex == 5) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: ((context) => const LoginPage())));
-      }
     }
   }
 
@@ -156,8 +148,7 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
             currentIndex: selectedindex,
             type: BottomNavigationBarType.fixed,
             onTap: onitemtapped,
-            backgroundColor: Colors
-                .transparent, // Set to transparent to see the BottomAppBar color
+            backgroundColor: Colors.transparent, // Set to transparent to see the BottomAppBar color
             elevation: 0, // Remove top shadow color
           ),
         ),
