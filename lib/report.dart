@@ -4,45 +4,39 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geopawsfinal/bottom.dart'; // Assuming bottom.dart for BottomPage navigation
+import 'package:geopawsfinal/bottom.dart';
 import 'package:image_picker/image_picker.dart';
+import 'services.dart';  // Import Services
 
 void main() {
   runApp(const MaterialApp(
     debugShowCheckedModeBanner: false,
-    home: AdminFormPetPage(),
+    home: ReportFormPage(),
   ));
 }
 
-class AdminFormPetPage extends StatefulWidget {
-  const AdminFormPetPage({super.key});
+class ReportFormPage extends StatefulWidget {
+  const ReportFormPage({super.key});
 
   @override
-  _AdminFormPetPageState createState() => _AdminFormPetPageState();
+  _ReportFormPageState createState() => _ReportFormPageState();
 }
 
-class _AdminFormPetPageState extends State<AdminFormPetPage> {
+class _ReportFormPageState extends State<ReportFormPage> {
   final _globalKey = GlobalKey<ScaffoldMessengerState>();
 
   final user = FirebaseAuth.instance.currentUser;
-
-  final TextEditingController typeController = TextEditingController();
-  final TextEditingController breedController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
-  final TextEditingController colorController = TextEditingController();
-  final TextEditingController arrivaldateController = TextEditingController();
-  final TextEditingController sizeweightController = TextEditingController();
-  final TextEditingController sexController = TextEditingController();
-
-  // New Controllers for additional information
-  final TextEditingController rescueLocationController = TextEditingController();
-  final TextEditingController firstOwnerController = TextEditingController();
-  final TextEditingController healthIssuesController = TextEditingController();
-  final TextEditingController additionalDetailsController = TextEditingController();
+  final TextEditingController petNameController = TextEditingController();
+  final TextEditingController lostDateController = TextEditingController();
+  final TextEditingController locationController = TextEditingController();
+  final TextEditingController appearanceController = TextEditingController();
+  final TextEditingController additionalInfoController = TextEditingController();
 
   String images = "";
   XFile? image;
   String downloadURL = "";
+
+  final Services _services = Services();  // Instantiate Services
 
   Future<void> showImage(ImageSource source) async {
     final img = await ImagePicker().pickImage(source: source);
@@ -64,8 +58,8 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
         });
 
         return const AlertDialog(
-          title: Text('Waiting...'),
-          content: Text("Waiting to Upload Image to Firebase"),
+          title: Text('Uploading...'),
+          content: Text("Uploading image to Firebase"),
         );
       },
     );
@@ -73,7 +67,7 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
     try {
       final storageRef = FirebaseStorage.instance
           .ref()
-          .child('images/${DateTime.now().toIso8601String()}.png');
+          .child('reports/${DateTime.now().toIso8601String()}.png');
       final uploadTask = storageRef.putFile(imageFile);
       await uploadTask.whenComplete(() async {
         downloadURL = await storageRef.getDownloadURL();
@@ -112,7 +106,7 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
                   },
                 ),
                 const Text(
-                  'Pet Form',
+                  'Report Pet',
                   style: TextStyle(color: Colors.white),
                 )
               ],
@@ -163,17 +157,11 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
                         ),
                       ),
                     ),
-                    buildTextField('Type', typeController),
-                    buildTextField('Breed', breedController),
-                    buildTextField('Age', ageController),
-                    buildTextField('Color', colorController),
-                    buildTextField('Arrival Date', arrivaldateController),
-                    buildTextField('Size Weight', sizeweightController),
-                    buildTextField('Sex', sexController),
-                    buildTextField('Rescue Location', rescueLocationController),
-                    buildTextField('First Owner', firstOwnerController),
-                    buildTextField('Health Issues', healthIssuesController, maxLines: 3),
-                    buildTextField('Additional Details', additionalDetailsController, maxLines: 3),
+                    buildTextField('Pet Name', petNameController),
+                    buildTextField('Date Lost', lostDateController),
+                    buildTextField('Location Lost', locationController),
+                    buildTextField('Appearance (Color, Size, etc.)', appearanceController, maxLines: 5),
+                    buildTextField('Additional Information', additionalInfoController, maxLines: 5),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 7),
                       margin: const EdgeInsets.only(top: 30),
@@ -184,37 +172,29 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
                       ),
                       child: SizedBox(
                         child: TextButton(
-                          onPressed: () {
-                            FirebaseFirestore.instance
-                                .collection('pet')
-                                .doc()
-                                .set({
-                              'type': typeController.text,
-                              'breed': breedController.text,
-                              'age': ageController.text,
-                              'color': colorController.text,
-                              'arrivaldate': arrivaldateController.text,
-                              'sizeweight': sizeweightController.text,
-                              'sex': sexController.text,
-                              'rescue_location': rescueLocationController.text,
-                              'first_owner': firstOwnerController.text,
-                              'health_issues': healthIssuesController.text,
-                              'additional_details': additionalDetailsController.text,
-                              'images': downloadURL,
-                              'status': 'Available',
-                            }).then((value) {
-                              var snackBar = const SnackBar(
-                                  backgroundColor: Colors.green,
-                                  content: Text('Pet submitted successfully'));
-                              _globalKey.currentState?.showSnackBar(snackBar);
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => BottomPage()));
-                            });
+                          onPressed: () async {
+                            await _services.createPetReport(
+                              petNameController.text,
+                              lostDateController.text,
+                              locationController.text,
+                              appearanceController.text,
+                              additionalInfoController.text,
+                              downloadURL,
+                              user?.email ?? '',
+                            );
+
+                            var snackBar = const SnackBar(
+                                backgroundColor: Colors.green,
+                                content: Text('Pet report submitted successfully'));
+                            _globalKey.currentState?.showSnackBar(snackBar);
+
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => BottomPage()));
                           },
                           child: const Text(
-                            'Save',
+                            'Submit Report',
                             style: TextStyle(color: Colors.white, fontSize: 20),
                           ),
                         ),

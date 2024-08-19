@@ -7,6 +7,7 @@ import 'package:geopawsfinal/pet2.dart';
 import '/login.dart';
 import '/profile.dart';
 import '/welcome.dart';
+import '/report.dart';  // Import ReportPage
 
 void main() {
   runApp(BottomPage());
@@ -39,16 +40,17 @@ class MainAppwidget extends StatefulWidget {
 class MainAppwidgetfooter extends State<MainAppwidget> {
   int selectedindex = 0;
 
-  static const List<Widget> widgetoption = [
-    WelcomePage(),
-    PetPage(),
-    MessageViewPage(),
-    ProfilePage(),
-    FeedbackPage()
+  static List<Widget> widgetoption = [
+    const WelcomePage(),
+    const PetPage(),
+    const MessageViewPage(),
+    const ProfilePage(),
+    const FeedbackPage(),
+    ReportFormPage(),  // ReportPage added here (without const)
   ];
 
   void onitemtapped(int index) {
-    if (index == 5) {
+    if (index == 6) {  // Updated index for Logout since Report is added
       _showLogoutDialog(context);
     } else {
       setState(() {
@@ -61,6 +63,9 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
       } else if (selectedindex == 2) {
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: ((context) => const MessageViewPage())));
+      } else if (selectedindex == 5) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: ((context) => ReportFormPage())));  // Navigate to ReportPage (without const)
       }
     }
   }
@@ -154,6 +159,13 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
                 label: 'Feedback',
               ),
               BottomNavigationBarItem(
+                icon: FaIcon(
+                  FontAwesomeIcons.fileAlt,
+                  size: 25,
+                ),
+                label: 'Report',  // New Report item
+              ),
+              BottomNavigationBarItem(
                 icon: Icon(
                   Icons.logout,
                   size: 25,
@@ -164,8 +176,7 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
             currentIndex: selectedindex,
             type: BottomNavigationBarType.fixed,
             onTap: onitemtapped,
-            backgroundColor: Colors
-                .transparent, // Set to transparent to see the BottomAppBar color
+            backgroundColor: Colors.transparent, // Set to transparent to see the BottomAppBar color
             elevation: 0, // Remove top shadow color
           ),
         ),

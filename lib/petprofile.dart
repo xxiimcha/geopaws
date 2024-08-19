@@ -179,35 +179,7 @@ class _PetProfilePage extends State<PetProfilePage> {
                     ),
                     child: TextButton(
                       onPressed: () {
-                        FirebaseFirestore.instance
-                            .collection('request')
-                            .where('uid', isEqualTo: user!.uid)
-                            .where('status', isEqualTo: 'Pending')
-                            .get()
-                            .then((QuerySnapshot querySnapshot) {
-                          if (querySnapshot.docs.isEmpty) {
-                            FirebaseFirestore.instance.collection('request').add({
-                              'petId': widget.docId,
-                              'uid': user.uid,
-                              'fullname': fullname,
-                              'status': 'Pending'
-                            });
-
-                            var snackBar = const SnackBar(
-                              backgroundColor: Colors.green,
-                              content: Text(
-                                  'Success Request Adopt Waiting for approval'),
-                            );
-                            _globalKey.currentState?.showSnackBar(snackBar);
-                          } else {
-                            var snackBar = const SnackBar(
-                              content: Text('Already Request'),
-                            );
-                            _globalKey.currentState?.showSnackBar(snackBar);
-                          }
-                        }).catchError((error) {
-                          print("Error getting documents: $error");
-                        });
+                        _showConfirmationDialog(context, user);
                       },
                       child: const Text(
                         'Request Adopt',
@@ -247,6 +219,62 @@ class _PetProfilePage extends State<PetProfilePage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showConfirmationDialog(BuildContext context, User? user) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Are you sure you want to adopt this pet?"),
+          content: const Text("Are you aware about the condition of this pet? No cancellation."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Yes"),
+              onPressed: () {
+                FirebaseFirestore.instance
+                    .collection('request')
+                    .where('uid', isEqualTo: user!.uid)
+                    .where('status', isEqualTo: 'Pending')
+                    .get()
+                    .then((QuerySnapshot querySnapshot) {
+                  if (querySnapshot.docs.isEmpty) {
+                    FirebaseFirestore.instance.collection('request').add({
+                      'petId': widget.docId,
+                      'uid': user.uid,
+                      'fullname': fullname,
+                      'status': 'Pending'
+                    });
+
+                    Navigator.of(context).pop(); // Close the dialog
+                    var snackBar = const SnackBar(
+                      backgroundColor: Colors.green,
+                      content: Text(
+                          'Success Request Adopt Waiting for approval'),
+                    );
+                    _globalKey.currentState?.showSnackBar(snackBar);
+                  } else {
+                    Navigator.of(context).pop(); // Close the dialog
+                    var snackBar = const SnackBar(
+                      content: Text('Already Request'),
+                    );
+                    _globalKey.currentState?.showSnackBar(snackBar);
+                  }
+                }).catchError((error) {
+                  print("Error getting documents: $error");
+                });
+              },
+            ),
+            TextButton(
+              child: const Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

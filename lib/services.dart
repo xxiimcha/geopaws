@@ -60,8 +60,7 @@ class Services {
     }
   }
 
-  signUp(
-      String firstname, String lastname, String email, String password) async {
+  signUp(String firstname, String lastname, String email, String password) async {
     UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
     String? uid = userCredential.user?.uid;
@@ -124,20 +123,21 @@ class Services {
     });
   }
 
-  // ignore: non_constant_identifier_names
-  // Feedback(String uid, String firstname, String lastname, String feedback) {
-  //   FirebaseFirestore.instance.collection('feedback').doc().set({
-  //     'uid': uid,
-  //     'firstname': firstname,
-  //     'lastname': lastname,
-  //     'feedback': feedback,
-  //   });
-  // }
-
-  // ignore: non_constant_identifier_names
-  CreatePet(String type, String breed, String age, String color,
-      String arrivaldate, String sizeweight, String sex) {
-    FirebaseFirestore.instance.collection('pet').doc().set({
+  // Method to create a pet with additional information
+  Future<void> createPet(
+      String type,
+      String breed,
+      String age,
+      String color,
+      String arrivaldate,
+      String sizeweight,
+      String sex,
+      String rescueLocation, // New field
+      String firstOwner, // New field
+      String healthIssues, // New field
+      String additionalDetails, // New field
+      String imageUrl) async {
+    await FirebaseFirestore.instance.collection('pet').add({
       'type': type,
       'breed': breed,
       'age': age,
@@ -145,7 +145,32 @@ class Services {
       'arrivaldate': arrivaldate,
       'sizeweight': sizeweight,
       'sex': sex,
+      'rescue_location': rescueLocation, // New field
+      'first_owner': firstOwner, // New field
+      'health_issues': healthIssues, // New field
+      'additional_details': additionalDetails, // New field
+      'images': imageUrl,
       'status': 'Available'
+    });
+  }
+
+  // Method to create a pet report
+  Future<void> createPetReport(
+      String petName,
+      String dateLost,
+      String locationLost,
+      String appearance,
+      String additionalInfo,
+      String imageUrl,
+      String userEmail) async {
+    await FirebaseFirestore.instance.collection('pet_reports').add({
+      'pet_name': petName,
+      'date_lost': dateLost,
+      'location_lost': locationLost,
+      'appearance': appearance,
+      'additional_info': additionalInfo,
+      'image': imageUrl,
+      'user': userEmail,
     });
   }
 
