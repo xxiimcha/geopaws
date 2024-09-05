@@ -93,7 +93,7 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
                 const SizedBox(height: 20),
                 _sectionHeader('Reports'), // Keep the Reports section
                 const SizedBox(height: 10),
-                _buildReportsSection(), // Load data from reports collection here
+                _buildReportsSection(context), // Load data from pet_reports collection here
                 const SizedBox(height: 30),
               ],
             ),
@@ -233,10 +233,10 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
   }
 
   // Reports Section
-  Widget _buildReportsSection() {
+  Widget _buildReportsSection(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('reports') // Fetch data from the reports collection
+          .collection('pet_reports') // Fetch data from the pet_reports collection
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -261,10 +261,10 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
           itemCount: reportData.length,
           itemBuilder: (context, index) {
             final data = reportData[index];
-            final reportTitle = data['title'] ?? 'Unnamed Report';
+            final petName = data['pet_name'] ?? 'Unnamed Pet';
             final reportId = data.id;
 
-            return _buildReportCard(reportTitle, reportId);
+            return _buildReportCard(context, petName, reportId, data);
           },
         );
       },
@@ -340,8 +340,8 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
     );
   }
 
-  // Report Card Widget for reports collection
-  Widget _buildReportCard(String reportTitle, String reportId) {
+  // Report Card Widget for pet_reports collection
+  Widget _buildReportCard(BuildContext context, String petName, String reportId, dynamic data) {
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(10),
@@ -361,7 +361,7 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
         children: [
           Expanded(
             child: Text(
-              reportTitle,
+              petName,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
@@ -374,10 +374,129 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
               color: Color.fromARGB(255, 0, 63, 157),
             ),
             onPressed: () {
-              // Define your view report page here
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ReportDetailsPage(data: data),
+                ),
+              );
             },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ReportDetailsPage extends StatelessWidget {
+  final dynamic data;
+
+  const ReportDetailsPage({super.key, required this.data});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 0, 63, 157),
+        title: const Text("Report Details"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 5,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // Circular Pet Image
+                  CircleAvatar(
+                    radius: 60,
+                    backgroundImage: NetworkImage(data['image']),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Pet Name Section
+                  Text(
+                    data['pet_name'] ?? 'Unnamed Pet',
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+
+                  // Appearance Section
+                  _buildDetailItem(
+                    context: context,
+                    icon: Icons.pets,
+                    title: 'Appearance',
+                    subtitle: data['appearance'] ?? 'Not specified',
+                  ),
+                  const Divider(),
+
+                  // Date Lost Section
+                  _buildDetailItem(
+                    context: context,
+                    icon: Icons.calendar_today,
+                    title: 'Date Lost',
+                    subtitle: data['date_lost'] ?? 'Not specified',
+                  ),
+                  const Divider(),
+
+                  // Location Lost Section
+                  _buildDetailItem(
+                    context: context,
+                    icon: Icons.location_on,
+                    title: 'Location Lost',
+                    subtitle: data['location_lost'] ?? 'Not specified',
+                  ),
+                  const Divider(),
+
+                  // Additional Information Section
+                  _buildDetailItem(
+                    context: context,
+                    icon: Icons.info_outline,
+                    title: 'Additional Info',
+                    subtitle: data['additional_info'] ?? 'No additional information',
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDetailItem({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: const Color.fromARGB(255, 0, 63, 157)),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(fontSize: 16),
       ),
     );
   }

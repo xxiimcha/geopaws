@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geopawsfinal/bottom.dart'; // Assuming bottom.dart for BottomPage navigation
+import 'package:geopawsfinal/adminbottom.dart'; // Assuming bottom.dart for BottomPage navigation
 import 'package:image_picker/image_picker.dart';
 
 void main() {
@@ -107,7 +107,7 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BottomPage(),
+                          builder: (context) => AdminBottomPage(),
                         ));
                   },
                 ),
@@ -210,7 +210,7 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => BottomPage()));
+                                      builder: (context) => AdminBottomPage()));
                             });
                           },
                           child: const Text(
