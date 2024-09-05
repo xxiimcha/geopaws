@@ -387,7 +387,6 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
     );
   }
 }
-
 class ReportDetailsPage extends StatelessWidget {
   final dynamic data;
 
@@ -395,6 +394,8 @@ class ReportDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final Map<String, dynamic>? documentData = data.data() as Map<String, dynamic>?;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 63, 157),
@@ -422,13 +423,15 @@ class ReportDetailsPage extends StatelessWidget {
                   // Circular Pet Image
                   CircleAvatar(
                     radius: 60,
-                    backgroundImage: NetworkImage(data['image']),
+                    backgroundImage: documentData != null && documentData.containsKey('image') && documentData['image'] != null
+                        ? NetworkImage(documentData['image'])
+                        : AssetImage('assets/default_pet_image.png') as ImageProvider, // Fallback image if image is missing
                   ),
                   const SizedBox(height: 20),
 
                   // Pet Name Section
                   Text(
-                    data['pet_name'] ?? 'Unnamed Pet',
+                    documentData != null && documentData.containsKey('pet_name') ? documentData['pet_name'] : 'Unnamed Pet',
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -441,7 +444,9 @@ class ReportDetailsPage extends StatelessWidget {
                     context: context,
                     icon: Icons.pets,
                     title: 'Appearance',
-                    subtitle: data['appearance'] ?? 'Not specified',
+                    subtitle: documentData != null && documentData.containsKey('appearance') && documentData['appearance'] != null
+                        ? documentData['appearance']
+                        : 'Not specified',
                   ),
                   const Divider(),
 
@@ -450,7 +455,9 @@ class ReportDetailsPage extends StatelessWidget {
                     context: context,
                     icon: Icons.calendar_today,
                     title: 'Date Lost',
-                    subtitle: data['date_lost'] ?? 'Not specified',
+                    subtitle: documentData != null && documentData.containsKey('date_lost') && documentData['date_lost'] != null
+                        ? documentData['date_lost']
+                        : 'Not specified',
                   ),
                   const Divider(),
 
@@ -459,7 +466,9 @@ class ReportDetailsPage extends StatelessWidget {
                     context: context,
                     icon: Icons.location_on,
                     title: 'Location Lost',
-                    subtitle: data['location_lost'] ?? 'Not specified',
+                    subtitle: documentData != null && documentData.containsKey('location_lost') && documentData['location_lost'] != null
+                        ? documentData['location_lost']
+                        : 'Not specified',
                   ),
                   const Divider(),
 
@@ -468,7 +477,9 @@ class ReportDetailsPage extends StatelessWidget {
                     context: context,
                     icon: Icons.info_outline,
                     title: 'Additional Info',
-                    subtitle: data['additional_info'] ?? 'No additional information',
+                    subtitle: documentData != null && documentData.containsKey('additional_info') && documentData['additional_info'] != null
+                        ? documentData['additional_info']
+                        : 'No additional information',
                   ),
                 ],
               ),
