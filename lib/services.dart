@@ -159,7 +159,6 @@ class Services {
       String petName,
       String dateLost,
       String locationLost,
-      String appearance,
       String additionalInfo,
       String imageUrl,
       String userEmail) async {
@@ -167,7 +166,6 @@ class Services {
       'pet_name': petName,
       'date_lost': dateLost,
       'location_lost': locationLost,
-      'appearance': appearance,
       'additional_info': additionalInfo,
       'image': imageUrl,
       'user': userEmail,

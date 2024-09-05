@@ -129,19 +129,52 @@ class _LoginPage extends State<LoginPage> {
                                               builder: (context) =>
                                                   AdminBottomPage()));
                                     } else {
-                                      print(type);
-                                      Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  BottomPage()));
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return AlertDialog(
+                                            title: const Text(
+                                                "GeoPaws Terms and Conditions"),
+                                            content: SingleChildScrollView(
+                                              child: ListBody(
+                                                children: const <Widget>[
+                                                  Text(
+                                                      'Introduction: \nWelcome to GeoPaws, an animal rescue and pet adoption platform designed to connect pets in need of homes with potential adopters. By using our application, you agree to the following terms and conditions. Please read them carefully before proceeding.\n'),
+                                                  Text(
+                                                      '1. No Cancellation of Adoption Process: Once you have committed to adopting a pet through GeoPaws, the adoption process cannot be canceled. Please be sure of your decision before proceeding.\n'),
+                                                  Text(
+                                                      '2. Valid Identification Requirement: You will not be able to collect your pet without presenting valid identification. The information on your ID must match the details provided in the app. Please ensure you bring your valid IDs.\n'),
+                                                  Text(
+                                                      '3. Age Requirement: You must be at least 18 years old to use our application and adopt a pet.\n'),
+                                                  Text(
+                                                      '4. Responsible Pet Ownership: By adopting a pet through our platform, you commit to providing a safe, loving, and responsible home for the animal.\n'),
+                                                  Text(
+                                                      '5. Adoption Process:\nApplication Submission: All prospective adopters must complete and submit an adoption application, which will be reviewed by our team.\nAdoption Approval: Approval of an adoption application is at the sole discretion of GeoPaws. We reserve the right to decline applications without providing specific reasons.\n'),
+                                                  Text(
+                                                      'For any questions or concerns regarding these terms and conditions, please provide your feedback. Thank you.'),
+                                                  SizedBox(height: 20),
+                                                  Text(
+                                                    "I Agree",
+                                                    style: TextStyle(
+                                                      color: Colors.blue,
+                                                      fontWeight:
+                                                      FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
                                     }
                                   }
                                 });
                               }).catchError((error) {
                                 var snackBar = const SnackBar(
                                     content: Text('Invalid Credentials'));
-                                _globalKey.currentState?.showSnackBar(snackBar);
+                                _globalKey.currentState
+                                    ?.showSnackBar(snackBar);
                               });
                             },
                             child: const Text(

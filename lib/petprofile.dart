@@ -94,30 +94,18 @@ class _PetProfilePage extends State<PetProfilePage> {
         key: _globalKey,
         child: Scaffold(
           appBar: AppBar(
-            backgroundColor: const Color.fromARGB(255, 0, 63, 157),
-            title: Row(
-              children: [
-                GestureDetector(
-                  child: const Icon(
-                    Icons.arrow_back,
-                    size: 30,
-                    color: Colors.white,
+            backgroundColor: Colors.blue, // Set background to blue
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white), // Set back icon to white
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PetPage(),
                   ),
-                  onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PetPage(),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(width: 10),
-                const Text(
-                  'Pet Profile',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ],
+                );
+              },
             ),
           ),
           body: ListView(
@@ -126,12 +114,12 @@ class _PetProfilePage extends State<PetProfilePage> {
               Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: Colors.grey.withOpacity(0.3),
                       spreadRadius: 2,
-                      blurRadius: 5,
+                      blurRadius: 10,
                       offset: const Offset(0, 3),
                     ),
                   ],
@@ -140,11 +128,11 @@ class _PetProfilePage extends State<PetProfilePage> {
                   children: [
                     ClipRRect(
                       borderRadius: const BorderRadius.vertical(
-                        top: Radius.circular(10),
+                        top: Radius.circular(20),
                       ),
                       child: Image.network(
                         images,
-                        height: 300,
+                        height: 250,
                         width: double.infinity,
                         fit: BoxFit.cover,
                       ),
@@ -153,13 +141,38 @@ class _PetProfilePage extends State<PetProfilePage> {
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
                         children: [
-                          _buildInfoRow('Type', type),
-                          _buildInfoRow('Breed', breed),
-                          _buildInfoRow('Age', age),
-                          _buildInfoRow('Color', color),
-                          _buildInfoRow('Arrival Date', arrivaldate),
-                          _buildInfoRow('Size Weight', sizeweight),
-                          _buildInfoRow('Sex', sex),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _buildInfoCard('Age', age),
+                              _buildInfoCard('Weight', sizeweight),
+                              _buildInfoCard('Sex', sex),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            breed,
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'About',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.blue,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'The Nora is a bright, sensitive dog who enjoys playing with family and responds well to training. As herders bred to move cattle, they are fearless and independent. They are vigilant watchdogs, with a big-dog bark.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -168,29 +181,20 @@ class _PetProfilePage extends State<PetProfilePage> {
               ),
               const SizedBox(height: 20),
               Center(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 50),
-                  padding: const EdgeInsets.symmetric(horizontal: 90),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xdd2e3131),
-                      borderRadius: BorderRadius.circular(40),
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.pets, color: Colors.white),
+                  label: const Text('Adopt'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: TextButton(
-                      onPressed: () {
-                        _showConfirmationDialog(context, user);
-                      },
-                      child: const Text(
-                        'Request Adopt',
-                        style: TextStyle(
-                          fontSize: 23,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
                   ),
+                  onPressed: () {
+                    _showConfirmationDialog(context, user);
+                  },
                 ),
               ),
             ],
@@ -200,22 +204,30 @@ class _PetProfilePage extends State<PetProfilePage> {
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildInfoCard(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      decoration: BoxDecoration(
+        color: const Color(0xFFEAF3FC),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
         children: [
           Text(
-            '$label:',
+            label,
+            style: const TextStyle(
+              fontSize: 14,
+              color: Colors.grey,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: Colors.blue,
             ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 16),
           ),
         ],
       ),
@@ -228,7 +240,8 @@ class _PetProfilePage extends State<PetProfilePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("Are you sure you want to adopt this pet?"),
-          content: const Text("Are you aware about the condition of this pet? No cancellation."),
+          content: const Text(
+              "Adopting a pet is a big responsibility and a long-term commitment. This furry friend will rely on you for love, care, and support for many years to come. Please confirm that you are ready to welcome this pet into your home and provide the necessary care and attention they deserve."),
           actions: <Widget>[
             TextButton(
               child: const Text("Yes"),
@@ -257,7 +270,7 @@ class _PetProfilePage extends State<PetProfilePage> {
                   } else {
                     Navigator.of(context).pop(); // Close the dialog
                     var snackBar = const SnackBar(
-                      content: Text('Already Request'),
+                      content: Text('Already Requested'),
                     );
                     _globalKey.currentState?.showSnackBar(snackBar);
                   }

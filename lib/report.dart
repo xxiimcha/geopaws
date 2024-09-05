@@ -29,7 +29,6 @@ class _ReportFormPageState extends State<ReportFormPage> {
   final TextEditingController petNameController = TextEditingController();
   final TextEditingController lostDateController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
-  final TextEditingController appearanceController = TextEditingController();
   final TextEditingController additionalInfoController = TextEditingController();
 
   String images = "";
@@ -89,142 +88,151 @@ class _ReportFormPageState extends State<ReportFormPage> {
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: const Color.fromARGB(255, 0, 63, 157),
-            title: Row(
-              children: [
-                GestureDetector(
-                  child: const Icon(
-                    Icons.arrow_back,
-                    size: 40,
-                    color: Colors.white,
-                  ),
-                  onTap: () {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BottomPage(),
-                        ));
-                  },
-                ),
-                const Text(
-                  'Report Pet',
-                  style: TextStyle(color: Colors.white),
-                )
-              ],
+            elevation: 0,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back, size: 30, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => BottomPage(),
+                    ));
+              },
+            ),
+            title: const Text(
+              'Report',
+              style: TextStyle(color: Colors.white, fontSize: 24),
             ),
           ),
-          body: ListView(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Column(
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                // Concern input field
+                buildTextField('What is your concern?', petNameController),
+
+                const SizedBox(height: 16),
+
+                // Image Upload Button
+                GestureDetector(
+                  onTap: () {
+                    showImage(ImageSource.gallery).then((value) {});
+                  },
+                  child: Container(
+                    height: 200,
+                    decoration: BoxDecoration(
+                      color: const Color.fromARGB(82, 228, 228, 228),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.grey),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        image != null
+                            ? Image.file(
+                          File(image!.path),
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        )
+                            : const FaIcon(
+                          FontAwesomeIcons.image,
+                          size: 70,
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          'Upload Image',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Date and Location input fields
+                Row(
                   children: [
-                    TextButton(
-                      onPressed: () {
-                        showImage(ImageSource.gallery).then((value) {});
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(30),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(82, 228, 228, 228),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Column(
-                          children: [
-                            image != null
-                                ? Image.file(
-                              File(image!.path),
-                              width: 70,
-                              height: 70,
-                            )
-                                : images != ''
-                                ? Image.network(
-                              images,
-                              width: 70,
-                              height: 70,
-                            )
-                                : const FaIcon(
-                              FontAwesomeIcons.image,
-                              size: 70,
-                            ),
-                            const Text(
-                              'Add Image of Pet',
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
+                    Expanded(
+                      child: buildTextField('Date', lostDateController),
                     ),
-                    buildTextField('Pet Name', petNameController),
-                    buildTextField('Date Lost', lostDateController),
-                    buildTextField('Location Lost', locationController),
-                    buildTextField('Appearance (Color, Size, etc.)', appearanceController, maxLines: 5),
-                    buildTextField('Additional Information', additionalInfoController, maxLines: 5),
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 7),
-                      margin: const EdgeInsets.only(top: 30),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 0, 63, 157),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: SizedBox(
-                        child: TextButton(
-                          onPressed: () async {
-                            await _services.createPetReport(
-                              petNameController.text,
-                              lostDateController.text,
-                              locationController.text,
-                              appearanceController.text,
-                              additionalInfoController.text,
-                              downloadURL,
-                              user?.email ?? '',
-                            );
-
-                            var snackBar = const SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text('Pet report submitted successfully'));
-                            _globalKey.currentState?.showSnackBar(snackBar);
-
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => BottomPage()));
-                          },
-                          child: const Text(
-                            'Submit Report',
-                            style: TextStyle(color: Colors.white, fontSize: 20),
-                          ),
-                        ),
-                      ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: buildTextField('Location', locationController),
                     ),
-                    Container(margin: const EdgeInsets.only(bottom: 20))
                   ],
                 ),
-              )
-            ],
+
+                const SizedBox(height: 16),
+
+                // Additional Information
+                buildTextField('Additional Information', additionalInfoController, maxLines: 5),
+
+                const SizedBox(height: 30),
+
+                // Submit Report Button
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await _services.createPetReport(
+                        petNameController.text,
+                        lostDateController.text,
+                        locationController.text,
+                        additionalInfoController.text,
+                        downloadURL,
+                        user?.email ?? '',
+                      );
+
+                      var snackBar = const SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text('Report submitted successfully'));
+                      _globalKey.currentState?.showSnackBar(snackBar);
+
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BottomPage()));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 0, 63, 157),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      'Submit Report',
+                      style: TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget buildTextField(String labelText, TextEditingController controller, {int maxLines = 1}) {
+  Widget buildTextField(String labelText, TextEditingController controller,
+      {int maxLines = 1}) {
     return Container(
-      margin: const EdgeInsets.only(top: 30),
-      padding: const EdgeInsets.only(left: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-          color: const Color.fromARGB(82, 228, 228, 228),
-          borderRadius: BorderRadius.circular(30)),
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(10),
+      ),
       child: TextField(
         controller: controller,
         maxLines: maxLines,
         decoration: InputDecoration(
-            labelText: labelText,
-            border: InputBorder.none,
-            labelStyle: const TextStyle(color: Colors.black)),
+          labelText: labelText,
+          border: InputBorder.none,
+          labelStyle: const TextStyle(fontSize: 16),
+        ),
       ),
     );
   }
