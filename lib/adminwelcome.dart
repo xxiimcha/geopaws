@@ -91,9 +91,9 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
                 const SizedBox(height: 10),
                 _buildRequestSection('Approved', context, AdminViewApprovedPage),
                 const SizedBox(height: 20),
-                _sectionHeader('Reports'), // Keep the Reports section
+                _sectionHeader('Reports'),
                 const SizedBox(height: 10),
-                _buildReportsSection(context), // Load data from pet_reports collection here
+                _buildReportsSection(context),
                 const SizedBox(height: 30),
               ],
             ),
@@ -189,7 +189,6 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
     );
   }
 
-  // Requests Section for Pending and Approved
   Widget _buildRequestSection(String status, BuildContext context, Type viewPage) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
@@ -232,11 +231,10 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
     );
   }
 
-  // Reports Section
   Widget _buildReportsSection(BuildContext context) {
     return StreamBuilder(
       stream: FirebaseFirestore.instance
-          .collection('pet_reports') // Fetch data from the pet_reports collection
+          .collection('pet_reports')
           .snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -263,15 +261,15 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
             final data = reportData[index];
             final petName = data['pet_name'] ?? 'Unnamed Pet';
             final reportId = data.id;
+            final status = data.data().containsKey('status') ? data['status'] : 'In Progress';
 
-            return _buildReportCard(context, petName, reportId, data);
+            return _buildReportCard(context, petName, reportId, data, status);
           },
         );
       },
     );
   }
 
-  // Request Card Widget
   Widget _buildRequestCard(
       dynamic data,
       String fullname,
@@ -280,8 +278,7 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
       String docId,
       String status,
       BuildContext context,
-      Type viewPage,
-      ) {
+      Type viewPage) {
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(10),
@@ -340,8 +337,7 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
     );
   }
 
-  // Report Card Widget for pet_reports collection
-  Widget _buildReportCard(BuildContext context, String petName, String reportId, dynamic data) {
+  Widget _buildReportCard(BuildContext context, String petName, String reportId, dynamic data, String status) {
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(10),
@@ -360,12 +356,25 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
-            child: Text(
-              petName,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  petName,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  status == 'rescued' ? 'Rescued' : 'In Progress',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
             ),
           ),
           IconButton(
@@ -387,14 +396,16 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
     );
   }
 }
+
 class ReportDetailsPage extends StatelessWidget {
   final dynamic data;
-
   const ReportDetailsPage({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic>? documentData = data.data() as Map<String, dynamic>?;
+    final String reportId = data.id;
+    final String status = documentData != null && documentData.containsKey('status') ? documentData['status'] : 'In Progress';
 
     return Scaffold(
       appBar: AppBar(
@@ -420,13 +431,40 @@ class ReportDetailsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Circular Pet Image
-                  CircleAvatar(
-                    radius: 60,
-                    backgroundImage: documentData != null && documentData.containsKey('image') && documentData['image'] != null
-                        ? NetworkImage(documentData['image'])
-                        : AssetImage('assets/default_pet_image.png') as ImageProvider, // Fallback image if image is missing
+                  // Circular Pet Image with enhanced design
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.3), // Shadow color
+                          spreadRadius: 2,
+                          blurRadius: 10,
+                          offset: Offset(0, 5), // Change the offset for desired shadow position
+                        ),
+                      ],
+                    ),
+                    child: CircleAvatar(
+                      radius: 70,
+                      backgroundColor: Colors.grey.shade200,
+                      child: ClipOval(
+                        child: documentData != null && documentData.containsKey('image') && documentData['image'] != null
+                            ? Image.network(
+                          documentData['image'],
+                          width: 130,
+                          height: 130,
+                          fit: BoxFit.cover,
+                        )
+                            : Image.asset(
+                          'assets/default_pet_image.png',
+                          width: 130,
+                          height: 130,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   ),
+
                   const SizedBox(height: 20),
 
                   // Pet Name Section
@@ -481,6 +519,35 @@ class ReportDetailsPage extends StatelessWidget {
                         ? documentData['additional_info']
                         : 'No additional information',
                   ),
+                  const Divider(),
+
+                  // Status Section
+                  _buildDetailItem(
+                    context: context,
+                    icon: Icons.flag,
+                    title: 'Status',
+                    subtitle: status, // Use the fallback value for status
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Rescue Button (disabled if already rescued)
+                  ElevatedButton(
+                    onPressed: status == 'rescued' ? null : () async {
+                      await rescuePet(context, reportId);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: status == 'rescued' ? Colors.grey : Colors.green,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 40),
+                    ),
+                    child: Text(
+                      status == 'rescued' ? "Rescued" : "Rescue",
+                      style: const TextStyle(fontSize: 18, color: Colors.white),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -510,5 +577,34 @@ class ReportDetailsPage extends StatelessWidget {
         style: const TextStyle(fontSize: 16),
       ),
     );
+  }
+
+  // Rescue Function
+  Future<void> rescuePet(BuildContext context, String reportId) async {
+    try {
+      // Update the document's status to 'rescued'
+      await FirebaseFirestore.instance.collection('pet_reports').doc(reportId).update({
+        'status': 'rescued',
+      });
+
+      // Show a confirmation message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Rescue marked as completed!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Navigate back to the previous page
+      Navigator.pop(context);
+    } catch (e) {
+      // Handle any errors here
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error rescuing pet: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }

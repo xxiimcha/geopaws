@@ -16,31 +16,27 @@ class Services {
         return null;
       }
 
-      final GoogleSignInAuthentication googleAuth =
-      await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
       final OAuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      final UserCredential userCredential =
-      await FirebaseAuth.instance.signInWithCredential(credential);
+      final UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
       final User? user = userCredential.user;
       if (user == null) {
         return null;
       }
 
-      // Step 5: Get user details from Google account
       final String uid = user.uid;
       final String email = user.email ?? '';
       final String displayName = user.displayName ?? '';
       final List<String> nameParts = displayName.split(' ');
       final String firstName = nameParts.isNotEmpty ? nameParts.first : '';
-      final String lastName =
-      nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      final String lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
-      // Step 6: Store user information in Firestore
+      // Store user information in Firestore
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
         'uid': uid,
         'firstname': firstName,
@@ -80,18 +76,7 @@ class Services {
     });
   }
 
-  // ignore: non_constant_identifier_names
-  Profile(
-      String uid,
-      String firstname,
-      String lastname,
-      String age,
-      String contact,
-      String address,
-      String images,
-      String images2,
-      String images3,
-      String email) {
+  Profile(String uid, String firstname, String lastname, String age, String contact, String address, String images, String images2, String images3, String email) {
     FirebaseFirestore.instance.collection('users').doc(uid).set({
       'uid': uid,
       'firstname': firstname,
@@ -107,9 +92,7 @@ class Services {
     });
   }
 
-  // ignore: non_constant_identifier_names
-  AdminProfile(String uid, String firstname, String lastname, String age,
-      String contact, String address, String images, String email) {
+  AdminProfile(String uid, String firstname, String lastname, String age, String contact, String address, String images, String email) {
     FirebaseFirestore.instance.collection('users').doc(uid).set({
       'uid': uid,
       'firstname': firstname,
@@ -123,20 +106,7 @@ class Services {
     });
   }
 
-  // Method to create a pet with additional information
-  Future<void> createPet(
-      String type,
-      String breed,
-      String age,
-      String color,
-      String arrivaldate,
-      String sizeweight,
-      String sex,
-      String rescueLocation, // New field
-      String firstOwner, // New field
-      String healthIssues, // New field
-      String additionalDetails, // New field
-      String imageUrl) async {
+  Future<void> createPet(String type, String breed, String age, String color, String arrivaldate, String sizeweight, String sex, String rescueLocation, String firstOwner, String healthIssues, String additionalDetails, String imageUrl) async {
     await FirebaseFirestore.instance.collection('pet').add({
       'type': type,
       'breed': breed,
@@ -145,23 +115,16 @@ class Services {
       'arrivaldate': arrivaldate,
       'sizeweight': sizeweight,
       'sex': sex,
-      'rescue_location': rescueLocation, // New field
-      'first_owner': firstOwner, // New field
-      'health_issues': healthIssues, // New field
-      'additional_details': additionalDetails, // New field
+      'rescue_location': rescueLocation,
+      'first_owner': firstOwner,
+      'health_issues': healthIssues,
+      'additional_details': additionalDetails,
       'images': imageUrl,
       'status': 'Available'
     });
   }
 
-  // Method to create a pet report
-  Future<void> createPetReport(
-      String petName,
-      String dateLost,
-      String locationLost,
-      String additionalInfo,
-      String imageUrl,
-      String userEmail) async {
+  Future<void> createPetReport(String petName, String dateLost, String locationLost, String additionalInfo, String imageUrl, String userEmail) async {
     await FirebaseFirestore.instance.collection('pet_reports').add({
       'pet_name': petName,
       'date_lost': dateLost,
@@ -169,7 +132,19 @@ class Services {
       'additional_info': additionalInfo,
       'image': imageUrl,
       'user': userEmail,
+      'status': 'In Progress', // Add default status for new reports
     });
+  }
+
+  // New function to update report status
+  Future<void> updateReportStatus(String reportId, String status) async {
+    try {
+      await FirebaseFirestore.instance.collection('pet_reports').doc(reportId).update({
+        'status': status,
+      });
+    } catch (e) {
+      print('Error updating report status: $e');
+    }
   }
 
   Future<bool> checkEmailExists(String email) async {
