@@ -30,6 +30,7 @@ class _ReportFormPageState extends State<ReportFormPage> {
   final TextEditingController lostDateController = TextEditingController();
   final TextEditingController locationController = TextEditingController();
   final TextEditingController additionalInfoController = TextEditingController();
+  final TextEditingController timeController = TextEditingController(); // Added for Time input
 
   String images = "";
   XFile? image;
@@ -106,110 +107,121 @@ class _ReportFormPageState extends State<ReportFormPage> {
           ),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                // Concern input field
-                buildTextField('What is your concern?', petNameController),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Concern input field
+                  buildTextField('What is your concern?', petNameController),
+                  const SizedBox(height: 16),
 
-                const SizedBox(height: 16),
-
-                // Image Upload Button
-                GestureDetector(
-                  onTap: () {
-                    showImage(ImageSource.gallery).then((value) {});
-                  },
-                  child: Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(82, 228, 228, 228),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        image != null
-                            ? Image.file(
-                          File(image!.path),
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        )
-                            : const FaIcon(
-                          FontAwesomeIcons.image,
-                          size: 70,
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Upload Image',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Date and Location input fields
-                Row(
-                  children: [
-                    Expanded(
-                      child: buildTextField('Date', lostDateController),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: buildTextField('Location', locationController),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Additional Information
-                buildTextField('Additional Information', additionalInfoController, maxLines: 5),
-
-                const SizedBox(height: 30),
-
-                // Submit Report Button
-                Container(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      await _services.createPetReport(
-                        petNameController.text,
-                        lostDateController.text,
-                        locationController.text,
-                        additionalInfoController.text,
-                        downloadURL,
-                        user?.email ?? '',
-                      );
-
-                      var snackBar = const SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text('Report submitted successfully'));
-                      _globalKey.currentState?.showSnackBar(snackBar);
-
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => BottomPage()));
+                  // Image Upload Section
+                  GestureDetector(
+                    onTap: () {
+                      showImage(ImageSource.gallery).then((value) {});
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 0, 63, 157),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    child: Container(
+                      height: 200,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(82, 228, 228, 228),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.grey),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          image != null
+                              ? Image.file(
+                            File(image!.path),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          )
+                              : const FaIcon(
+                            FontAwesomeIcons.image,
+                            size: 70,
+                          ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Upload Image',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ],
                       ),
                     ),
-                    child: const Text(
-                      'Submit Report',
-                      style: TextStyle(fontSize: 18, color: Colors.white),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Date and Time input fields
+                  Row(
+                    children: [
+                      Expanded(
+                        child: buildTextField('Date', lostDateController),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: buildTextField('Time', timeController),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Location input field
+                  buildTextField('Location', locationController),
+                  const SizedBox(height: 16),
+
+                  // Additional Information input field
+                  buildTextField(
+                    'Additional Information',
+                    additionalInfoController,
+                    maxLines: 5,
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // Submit Report Button
+                  Container(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await _services.createPetReport(
+                          petNameController.text,
+                          lostDateController.text,
+                          locationController.text,
+                          additionalInfoController.text,
+                          downloadURL,
+                          user?.email ?? '',
+                        );
+
+                        var snackBar = const SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text('Report submitted successfully'));
+                        _globalKey.currentState?.showSnackBar(snackBar);
+
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => BottomPage()));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 0, 63, 157),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Submit Report',
+                        style: TextStyle(fontSize: 18, color: Colors.white),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

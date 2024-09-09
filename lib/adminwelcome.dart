@@ -410,6 +410,15 @@ class ReportDetailsPage extends StatelessWidget {
     final String reportId = data.id;
     final String status = documentData != null && documentData.containsKey('status') ? documentData['status'] : 'In Progress';
 
+    // Retrieve the updated report fields
+    final String petName = documentData != null && documentData.containsKey('pet_name') ? documentData['pet_name'] : 'Unnamed Pet';
+    final String dateLost = documentData != null && documentData.containsKey('date_lost') ? documentData['date_lost'] : 'Not specified';
+    final String locationLost = documentData != null && documentData.containsKey('location_lost') ? documentData['location_lost'] : 'Not specified';
+    final String additionalInfo = documentData != null && documentData.containsKey('additional_info') ? documentData['additional_info'] : 'No additional info';
+
+    // Get image URL
+    final String imageUrl = documentData != null && documentData.containsKey('image') ? documentData['image'] : '';
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 63, 157),
@@ -434,110 +443,35 @@ class ReportDetailsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Circular Pet Image with enhanced design
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.3), // Shadow color
-                          spreadRadius: 2,
-                          blurRadius: 10,
-                          offset: Offset(0, 5), // Change the offset for desired shadow position
-                        ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                      radius: 70,
-                      backgroundColor: Colors.grey.shade200,
-                      child: ClipOval(
-                        child: documentData != null && documentData.containsKey('image') && documentData['image'] != null
-                            ? Image.network(
-                          documentData['image'],
-                          width: 130,
-                          height: 130,
-                          fit: BoxFit.cover,
-                        )
-                            : Image.asset(
-                          'assets/default_pet_image.png',
-                          width: 130,
-                          height: 130,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  ),
-
+                  // Display image at the top
+                  _buildPetImage(imageUrl),
                   const SizedBox(height: 20),
 
-                  // Pet Name Section
-                  Text(
-                    documentData != null && documentData.containsKey('pet_name') ? documentData['pet_name'] : 'Unnamed Pet',
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Appearance Section
-                  _buildDetailItem(
-                    context: context,
-                    icon: Icons.pets,
-                    title: 'Appearance',
-                    subtitle: documentData != null && documentData.containsKey('appearance') && documentData['appearance'] != null
-                        ? documentData['appearance']
-                        : 'Not specified',
-                  ),
+                  // Display Pet Name
+                  _buildDetailRow("Pet Name", petName),
                   const Divider(),
 
-                  // Date Lost Section
-                  _buildDetailItem(
-                    context: context,
-                    icon: Icons.calendar_today,
-                    title: 'Date Lost',
-                    subtitle: documentData != null && documentData.containsKey('date_lost') && documentData['date_lost'] != null
-                        ? documentData['date_lost']
-                        : 'Not specified',
-                  ),
+                  // Display Date Lost
+                  _buildDetailRow("Date", dateLost),
                   const Divider(),
 
-                  // Location Lost Section
-                  _buildDetailItem(
-                    context: context,
-                    icon: Icons.location_on,
-                    title: 'Location Lost',
-                    subtitle: documentData != null && documentData.containsKey('location_lost') && documentData['location_lost'] != null
-                        ? documentData['location_lost']
-                        : 'Not specified',
-                  ),
+                  // Display Location Lost
+                  _buildDetailRow("Location", locationLost),
                   const Divider(),
 
-                  // Additional Information Section
-                  _buildDetailItem(
-                    context: context,
-                    icon: Icons.info_outline,
-                    title: 'Additional Info',
-                    subtitle: documentData != null && documentData.containsKey('additional_info') && documentData['additional_info'] != null
-                        ? documentData['additional_info']
-                        : 'No additional information',
-                  ),
+                  // Display Additional Info
+                  _buildDetailRow("Additional Info", additionalInfo),
                   const Divider(),
 
-                  // Status Section
-                  _buildDetailItem(
-                    context: context,
-                    icon: Icons.flag,
-                    title: 'Status',
-                    subtitle: status, // Use the fallback value for status
-                  ),
+                  // Display Status
+                  _buildDetailRow("Status", status),
 
                   const SizedBox(height: 20),
 
                   // Rescue Button (disabled if already rescued)
                   ElevatedButton(
                     onPressed: status == 'rescued' ? null : () async {
-                      await rescuePet(context, reportId);
+                      await _rescuePet(context, reportId);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: status == 'rescued' ? Colors.grey : Colors.green,
@@ -560,30 +494,62 @@ class ReportDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailItem({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
-    return ListTile(
-      leading: Icon(icon, color: const Color.fromARGB(255, 0, 63, 157)),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
+  Widget _buildPetImage(String imageUrl) {
+    return Container(
+      width: double.infinity,
+      height: 250,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.grey.shade200,
       ),
-      subtitle: Text(
-        subtitle,
-        style: const TextStyle(fontSize: 16),
+      child: imageUrl.isNotEmpty
+          ? ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Image.network(
+          imageUrl,
+          fit: BoxFit.cover,
+          width: double.infinity,
+        ),
+      )
+          : const Icon(
+        Icons.pets,
+        size: 100,
+        color: Colors.grey,
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String title, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 
   // Rescue Function
-  Future<void> rescuePet(BuildContext context, String reportId) async {
+  Future<void> _rescuePet(BuildContext context, String reportId) async {
     try {
       // Update the document's status to 'rescued'
       await FirebaseFirestore.instance.collection('pet_reports').doc(reportId).update({

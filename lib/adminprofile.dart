@@ -275,7 +275,7 @@ class _AdminProfilePage extends State<AdminProfilePage> {
                           child: TextButton(
                             onPressed: () {
                               Services()
-                                  .AdminProfile(
+                                  .updateAdminProfile(
                                 _uidController.text,
                                 _firstnameController.text,
                                 _lastnameController.text,

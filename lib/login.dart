@@ -168,7 +168,7 @@ class _LoginPage extends State<LoginPage> {
                 Text(
                     '4. Responsible Pet Ownership: By adopting a pet through our platform, you commit to providing a safe, loving, and responsible home for the animal.\n'),
                 Text(
-                    '5. Adoption Process:\nApplication Submission: All prospective adopters must complete and submit an adoption application, which will be reviewed by our team.\nAdoption Approval: Approval of an adoption application is at the sole discretion of GeoPaws. We reserve the right to decline applications without providing specific reasons.\n'),
+                    '5. Adoption Process:\nApplication Submission: All prospective adopters must complete and submit an adoption application, which will be reviewed by our team.\n6. Adoption Approval: Approval of an adoption application is at the sole discretion of GeoPaws. We reserve the right to decline applications without providing specific reasons.\n'),
                 Text('For any questions or concerns regarding these terms and conditions, please provide your feedback. Thank you.'),
               ],
             ),

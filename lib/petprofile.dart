@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:geopawsfinal/bottom.dart';
-import 'package:geopawsfinal/login.dart';
 import 'package:geopawsfinal/pet2.dart';
 
 class PetProfilePage extends StatefulWidget {
@@ -24,8 +23,11 @@ class _PetProfilePage extends State<PetProfilePage> {
   String sizeweight = "";
   String sex = "";
   String images = "";
-
-  String email = "";
+  String rescueLocation = "";
+  String firstOwner = "";
+  String healthIssues = "";
+  String additionalDetails = "";
+  String fullname = "";
 
   @override
   void initState() {
@@ -53,6 +55,10 @@ class _PetProfilePage extends State<PetProfilePage> {
           sizeweight = userData['sizeweight'] ?? '';
           sex = userData['sex'] ?? '';
           images = userData['images'] ?? '';
+          rescueLocation = userData['rescue_location'] ?? '';
+          firstOwner = userData['first_owner'] ?? '';
+          healthIssues = userData['health_issues'] ?? '';
+          additionalDetails = userData['additional_details'] ?? '';
         });
       } else {
         print('Document does not exist');
@@ -61,8 +67,6 @@ class _PetProfilePage extends State<PetProfilePage> {
       print('Error fetching document: $e');
     }
   }
-
-  String fullname = "";
 
   Future<void> userfetchData() async {
     final user = FirebaseAuth.instance.currentUser;
@@ -140,6 +144,7 @@ class _PetProfilePage extends State<PetProfilePage> {
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -150,29 +155,15 @@ class _PetProfilePage extends State<PetProfilePage> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          Text(
-                            breed,
-                            style: const TextStyle(
-                                fontSize: 24, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 20),
-                          const Text(
-                            'About',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              color: Colors.blue,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            'The Nora is a bright, sensitive dog who enjoys playing with family and responds well to training. As herders bred to move cattle, they are fearless and independent. They are vigilant watchdogs, with a big-dog bark.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
+                          _buildInfoRow('Type', type),
+                          _buildInfoRow('Breed', breed),
+                          _buildInfoRow('Color', color),
+                          _buildInfoRow('Arrival Date', arrivaldate),
+                          const SizedBox(height: 16),
+                          _buildInfoRow('Rescue Location', rescueLocation),
+                          _buildInfoRow('First Owner', firstOwner),
+                          _buildInfoRow('Health Issues', healthIssues),
+                          _buildInfoRow('Additional Details', additionalDetails),
                         ],
                       ),
                     ),
@@ -227,6 +218,32 @@ class _PetProfilePage extends State<PetProfilePage> {
               fontSize: 16,
               fontWeight: FontWeight.bold,
               color: Colors.blue,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '$label:',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.black,
             ),
           ),
         ],
