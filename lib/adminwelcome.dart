@@ -233,9 +233,7 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
 
   Widget _buildReportsSection(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
-          .collection('pet_reports')
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('pet_reports').snapshots(),
       builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -261,7 +259,12 @@ class _AdminWelcomePage extends State<AdminWelcomePage> {
             final data = reportData[index];
             final petName = data['pet_name'] ?? 'Unnamed Pet';
             final reportId = data.id;
-            final status = data.data().containsKey('status') ? data['status'] : 'In Progress';
+
+            // Safely access the status field
+            final Map<String, dynamic>? documentData = data.data() as Map<String, dynamic>?;
+            final String status = (documentData != null && documentData.containsKey('status'))
+                ? documentData['status']
+                : 'In Progress';
 
             return _buildReportCard(context, petName, reportId, data, status);
           },
