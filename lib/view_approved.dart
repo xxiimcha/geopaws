@@ -5,21 +5,17 @@ import 'package:geopawsfinal/adminbottom.dart';
 import 'package:geopawsfinal/adminwelcome.dart';
 import 'package:geopawsfinal/welcome.dart';
 
-// ignore: camel_case_types
 class ViewApprovedPage extends StatefulWidget {
-  // ignore: prefer_typing_uninitialized_variables
-  final petId;
-  final uid;
-  final docId;
+  final String petId;
+  final String uid;
+  final String docId;
   const ViewApprovedPage(
       {super.key, required this.petId, required this.uid, required this.docId});
 
   @override
-  // ignore: library_private_types_in_public_api
   _ViewApprovedPage createState() => _ViewApprovedPage();
 }
 
-// ignore: camel_case_types
 class _ViewApprovedPage extends State<ViewApprovedPage> {
   final _globalKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -44,7 +40,6 @@ class _ViewApprovedPage extends State<ViewApprovedPage> {
   @override
   void initState() {
     super.initState();
-    // Fetch data based on the provided UID when the widget initializes
     petData();
     userData();
   }
@@ -53,8 +48,7 @@ class _ViewApprovedPage extends State<ViewApprovedPage> {
     try {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('pet')
-          .doc(widget
-              .petId) // Replace 'your_document_id' with the actual document ID
+          .doc(widget.petId)
           .get();
 
       if (documentSnapshot.exists) {
@@ -64,23 +58,23 @@ class _ViewApprovedPage extends State<ViewApprovedPage> {
           type = userData['type'] ?? '';
           breed = userData['breed'] ?? '';
           age = userData['age'] ?? '';
-          color = userData['contact'] ?? '';
-          arrivaldate = userData['address'] ?? '';
-          sizeweight = userData['email'] ?? '';
+          color = userData['color'] ?? '';
+          arrivaldate = userData['arrivaldate'] ?? '';
+          sizeweight = userData['sizeweight'] ?? '';
           sex = userData['sex'] ?? '';
           petimages = userData['images'] ?? '';
         });
-      } else {}
-      // ignore: empty_catches
-    } catch (e) {}
+      }
+    } catch (e) {
+      print('Error fetching pet data: $e');
+    }
   }
 
   Future<void> userData() async {
     try {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(widget
-              .uid) // Replace 'your_document_id' with the actual document ID
+          .doc(widget.uid)
           .get();
 
       if (documentSnapshot.exists) {
@@ -96,9 +90,10 @@ class _ViewApprovedPage extends State<ViewApprovedPage> {
           userimages2 = userData['images2'] ?? '';
           userimages3 = userData['images3'] ?? '';
         });
-      } else {}
-      // ignore: empty_catches
-    } catch (e) {}
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
   }
 
   @override
@@ -114,8 +109,8 @@ class _ViewApprovedPage extends State<ViewApprovedPage> {
               children: [
                 GestureDetector(
                   child: const Icon(
-                    Icons.arrow_left,
-                    size: 40,
+                    Icons.arrow_back,
+                    size: 30,
                     color: Colors.white,
                   ),
                   onTap: () {
@@ -126,6 +121,7 @@ class _ViewApprovedPage extends State<ViewApprovedPage> {
                         ));
                   },
                 ),
+                const SizedBox(width: 10),
                 const Text(
                   'Pet Approved',
                   style: TextStyle(color: Colors.white),
@@ -134,298 +130,166 @@ class _ViewApprovedPage extends State<ViewApprovedPage> {
             ),
           ),
           body: ListView(
+            padding: const EdgeInsets.all(16.0),
             children: [
-              Column(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: Colors.black,
-                    ),
-                    child: Column(
-                      children: [
-                        Image.network(
-                          petimages,
-                          height: 300,
-                          fit: BoxFit.cover,
-                        ),
-                        const Text(
-                          'Image',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text(
-                              'Type:  $type',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text('Breed: $breed',
-                                style: const TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text('Age: $age',
-                                style: const TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text('Color: $color',
-                                style: const TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text('Arrival Date: $arrivaldate',
-                                style: const TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text('Size Weight: $sizeweight',
-                                style: const TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text('Sex: $sex',
-                                style: const TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(margin: const EdgeInsets.only(bottom: 20))
-                ],
-              ),
-              Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(left: 22, top: 50),
-                    alignment: Alignment.bottomLeft,
-                    child: Text(
-                      'Customer',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        ClipOval(
-                          child: userimages == ''
-                              ? FaIcon(
-                                  FontAwesomeIcons.userCircle,
-                                  size: 50,
-                                  color: Colors.grey,
-                                )
-                              : Image.network(
-                                  userimages,
-                                  height: 70,
-                                  width:
-                                      70, // You need to set the width to make it a circle
-                                  fit: BoxFit.cover,
-                                ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(top: 30, left: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text(
-                              'Name:  $firstname $lastname',
-                              style: const TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text('Contact: $contact',
-                                style: const TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 30),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                              decoration: BoxDecoration(
-                                  color: const Color.fromARGB(255, 0, 63, 157),
-                                  borderRadius: BorderRadius.circular(30)),
-                              child: Text('Email: $email',
-                                  style: const TextStyle(color: Colors.white)),
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 30),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 10),
-                            decoration: BoxDecoration(
-                                color: const Color.fromARGB(255, 0, 63, 157),
-                                borderRadius: BorderRadius.circular(30)),
-                            child: Text('Address: $address',
-                                style: const TextStyle(color: Colors.white)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.bottomLeft,
-                    margin: const EdgeInsets.only(top: 30, left: 20),
-                    child: const Text(
-                      "Valid ID's",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 10),
-                    child: userimages2 == ''
-                        ? Text(
-                            'No Valid ID',
-                            style: TextStyle(
-                                fontSize: 23,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey),
-                          )
-                        : Image.network(
-                            userimages2,
-                          ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 15),
-                    child: userimages3 == ''
-                        ? Text(
-                            'No Valid ID',
-                            style: TextStyle(
-                                fontSize: 23,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.grey),
-                          )
-                        : Image.network(
-                            userimages3,
-                          ),
-                  ),
-                  Container(margin: const EdgeInsets.only(bottom: 20))
-                ],
-              )
+              _buildPetInfoSection(),
+              const SizedBox(height: 20),
+              _buildCustomerInfoSection(),
+              const SizedBox(height: 20),
+              _buildValidIDSection(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPetInfoSection() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 5,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+            child: petimages.isNotEmpty
+                ? Image.network(
+              petimages,
+              height: 300,
+              fit: BoxFit.cover,
+            )
+                : const Icon(
+              Icons.image_not_supported,
+              size: 100,
+              color: Colors.grey,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                _buildInfoRow('Type', type),
+                _buildInfoRow('Breed', breed),
+                _buildInfoRow('Age', age),
+                _buildInfoRow('Color', color),
+                _buildInfoRow('Arrival Date', arrivaldate),
+                _buildInfoRow('Weight', sizeweight),
+                _buildInfoRow('Sex', sex),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCustomerInfoSection() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Customer Information',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 40,
+                  backgroundImage: userimages.isNotEmpty
+                      ? NetworkImage(userimages)
+                      : null,
+                  backgroundColor: Colors.grey.shade300,
+                  child: userimages.isEmpty
+                      ? const Icon(Icons.person, size: 50, color: Colors.white)
+                      : null,
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildInfoRow('Name', '$firstname $lastname'),
+                      _buildInfoRow('Contact', contact),
+                      _buildInfoRow('Email', email),
+                      _buildInfoRow('Address', address),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildValidIDSection() {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              "Valid ID's",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            userimages2.isNotEmpty
+                ? Image.network(userimages2)
+                : const Text(
+              'No Valid ID',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 20),
+            userimages3.isNotEmpty
+                ? Image.network(userimages3)
+                : const Text(
+              'No Valid ID',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '$label:',
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            value.isNotEmpty ? value : 'Not specified',
+            style: const TextStyle(fontSize: 16),
+          ),
+        ],
       ),
     );
   }

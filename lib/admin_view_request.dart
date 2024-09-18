@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geopawsfinal/adminbottom.dart';
 import 'package:geopawsfinal/adminwelcome.dart';
 
 class AdminViewRequestPage extends StatefulWidget {
@@ -63,8 +62,6 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
           sex = userData['sex'] ?? '';
           petimages = userData['images'] ?? '';
         });
-      } else {
-        print('Document does not exist');
       }
     } catch (e) {
       print('Error fetching document: $e');
@@ -91,8 +88,6 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
           userimages2 = userData['images2'] ?? '';
           userimages3 = userData['images3'] ?? '';
         });
-      } else {
-        print('Document does not exist');
       }
     } catch (e) {
       print('Error fetching document: $e');
@@ -149,35 +144,35 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
   }
 
   Widget _buildPetInfoSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(10),
+              top: Radius.circular(15),
             ),
             child: Image.network(
               petimages,
-              height: 300,
+              height: 250,
               width: double.infinity,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.image_not_supported,
+                  size: 100,
+                  color: Colors.grey,
+                );
+              },
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildInfoRow('Type', type),
                 _buildInfoRow('Breed', breed),
@@ -195,18 +190,10 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
   }
 
   Widget _buildUserInfoSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         children: [
@@ -214,8 +201,12 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
             margin: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
             alignment: Alignment.bottomLeft,
             child: const Text(
-              'Customer',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              'Customer Information',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: Color.fromARGB(255, 0, 63, 157),
+              ),
             ),
           ),
           Padding(
@@ -226,7 +217,7 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
                   children: [
                     ClipOval(
                       child: userimages == ''
-                          ? FaIcon(
+                          ? const FaIcon(
                         FontAwesomeIcons.userCircle,
                         size: 50,
                         color: Colors.grey,
@@ -256,7 +247,11 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
             margin: const EdgeInsets.only(left: 16, bottom: 8),
             child: const Text(
               "Valid ID's",
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: Color.fromARGB(255, 0, 63, 157),
+              ),
             ),
           ),
           _buildValidIDSection(),
@@ -278,7 +273,7 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: imageUrl == ''
-          ? Text(
+          ? const Text(
         'No Valid ID',
         style: TextStyle(
           fontSize: 16,
@@ -286,8 +281,13 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
           color: Colors.grey,
         ),
       )
-          : Image.network(
-        imageUrl,
+          : ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          imageUrl,
+          height: 150,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
@@ -303,11 +303,18 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 16),
+          Expanded(
+            child: Text(
+              value.isNotEmpty ? value : 'Not specified',
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
           ),
         ],
       ),
@@ -351,11 +358,6 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
               }).catchError((error) {
                 print("Error updating status: $error");
               });
-              var snackBar = const SnackBar(
-                backgroundColor: Colors.green,
-                content: Text('Success Approved Request'),
-              );
-              _globalKey.currentState?.showSnackBar(snackBar);
             }).catchError((error) {
               print("Error updating status: $error");
             });
@@ -363,7 +365,7 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
           child: const Text(
             'Approve',
             style: TextStyle(
-              fontSize: 23,
+              fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),
@@ -400,7 +402,7 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
           child: const Text(
             'Decline',
             style: TextStyle(
-              fontSize: 23,
+              fontSize: 20,
               fontWeight: FontWeight.w700,
               color: Colors.white,
             ),

@@ -147,35 +147,35 @@ class _AdminViewApprovedPage extends State<AdminViewApprovedPage> {
   }
 
   Widget _buildPetInfoSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         children: [
           ClipRRect(
             borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(10),
+              top: Radius.circular(15),
             ),
             child: Image.network(
               petimages,
-              height: 300,
+              height: 250,
               width: double.infinity,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return const Icon(
+                  Icons.image_not_supported,
+                  size: 100,
+                  color: Colors.grey,
+                );
+              },
             ),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildInfoRow('Type', type),
                 _buildInfoRow('Breed', breed),
@@ -193,18 +193,10 @@ class _AdminViewApprovedPage extends State<AdminViewApprovedPage> {
   }
 
   Widget _buildUserInfoSection() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
-            spreadRadius: 2,
-            blurRadius: 5,
-            offset: const Offset(0, 3),
-          ),
-        ],
+    return Card(
+      elevation: 5,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
         children: [
@@ -212,8 +204,12 @@ class _AdminViewApprovedPage extends State<AdminViewApprovedPage> {
             margin: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
             alignment: Alignment.bottomLeft,
             child: const Text(
-              'Customer',
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              'Customer Information',
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: Color.fromARGB(255, 0, 63, 157),
+              ),
             ),
           ),
           Padding(
@@ -223,7 +219,7 @@ class _AdminViewApprovedPage extends State<AdminViewApprovedPage> {
                 Row(
                   children: [
                     ClipOval(
-                      child: userimages == ''
+                      child: userimages.isEmpty
                           ? const FaIcon(
                         FontAwesomeIcons.userCircle,
                         size: 50,
@@ -253,8 +249,12 @@ class _AdminViewApprovedPage extends State<AdminViewApprovedPage> {
             margin: const EdgeInsets.only(left: 16, bottom: 8),
             alignment: Alignment.bottomLeft,
             child: const Text(
-              "Valid ID's",
-              style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
+              "Valid IDs",
+              style: TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+                color: Color.fromARGB(255, 0, 63, 157),
+              ),
             ),
           ),
           _buildValidIDSection(),
@@ -275,7 +275,7 @@ class _AdminViewApprovedPage extends State<AdminViewApprovedPage> {
   Widget _buildIDImage(String imageUrl) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
-      child: imageUrl == ''
+      child: imageUrl.isEmpty
           ? const Text(
         'No Valid ID',
         style: TextStyle(
@@ -284,8 +284,13 @@ class _AdminViewApprovedPage extends State<AdminViewApprovedPage> {
           color: Colors.grey,
         ),
       )
-          : Image.network(
-        imageUrl,
+          : ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          imageUrl,
+          height: 150,
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }
@@ -301,11 +306,18 @@ class _AdminViewApprovedPage extends State<AdminViewApprovedPage> {
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: Colors.black,
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(fontSize: 16),
+          Expanded(
+            child: Text(
+              value.isNotEmpty ? value : 'Not specified',
+              textAlign: TextAlign.right,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.black,
+              ),
+            ),
           ),
         ],
       ),
