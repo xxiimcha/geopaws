@@ -192,6 +192,7 @@ class _ReportFormPageState extends State<ReportFormPage> {
                         await _services.createPetReport(
                           petNameController.text,
                           lostDateController.text,
+                          timeController.text, // Added time input
                           locationController.text,
                           additionalInfoController.text,
                           downloadURL,

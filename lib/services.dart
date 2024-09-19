@@ -154,16 +154,17 @@ class Services {
     }
   }
 
-  Future<void> createPetReport(String petName, String dateLost, String locationLost, String additionalInfo, String imageUrl, String userEmail) async {
+  Future<void> createPetReport(String petName, String dateLost, String timeLost, String locationLost, String additionalInfo, String imageUrl, String userEmail) async {
     try {
       await FirebaseFirestore.instance.collection('pet_reports').add({
         'pet_name': petName,
         'date_lost': dateLost,
+        'time_lost': timeLost, // Added time lost field
         'location_lost': locationLost,
         'additional_info': additionalInfo,
         'image': imageUrl,
         'user': userEmail,
-        'status': 'In Progress', // Add default status for new reports
+        'status': 'In Progress', // Default status for new reports
       });
     } catch (e) {
       print('Error creating pet report: $e');
