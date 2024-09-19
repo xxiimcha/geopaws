@@ -413,6 +413,7 @@ class ReportDetailsPage extends StatelessWidget {
     // Retrieve the updated report fields
     final String petName = documentData != null && documentData.containsKey('pet_name') ? documentData['pet_name'] : 'Unnamed Pet';
     final String dateLost = documentData != null && documentData.containsKey('date_lost') ? documentData['date_lost'] : 'Not specified';
+    final String timeLost = documentData != null && documentData.containsKey('time_lost') ? documentData['time_lost'] : 'Not specified'; // New field
     final String locationLost = documentData != null && documentData.containsKey('location_lost') ? documentData['location_lost'] : 'Not specified';
     final String additionalInfo = documentData != null && documentData.containsKey('additional_info') ? documentData['additional_info'] : 'No additional info';
 
@@ -453,6 +454,10 @@ class ReportDetailsPage extends StatelessWidget {
 
                   // Display Date Lost
                   _buildDetailRow("Date", dateLost),
+                  const Divider(),
+
+                  // Display Time Lost
+                  _buildDetailRow("Time", timeLost), // New field
                   const Divider(),
 
                   // Display Location Lost
