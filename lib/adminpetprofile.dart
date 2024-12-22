@@ -12,11 +12,11 @@ class AdminPetProfilePage extends StatefulWidget {
 
 class _AdminPetProfilePage extends State<AdminPetProfilePage> {
   String type = "";
-  String breed = "";
+  String pet_name = "";
   String age = "";
   String color = "";
   String arrivaldate = "";
-  String sizeweight = "";
+  String size = "";
   String sex = "";
   String images = "";
   String rescueLocation = "";
@@ -42,11 +42,11 @@ class _AdminPetProfilePage extends State<AdminPetProfilePage> {
 
         setState(() {
           type = userData['type'] ?? 'Not specified';
-          breed = userData['breed'] ?? 'Not specified';
+          pet_name = userData['pet_name'] ?? 'Not specified';
           age = userData['age'] ?? 'Not specified';
           color = userData['color'] ?? 'Not specified';
           arrivaldate = userData['arrivaldate'] ?? 'Not specified';
-          sizeweight = userData['sizeweight'] ?? 'Not specified';
+          size = userData['size'] ?? 'Not specified';
           sex = userData['sex'] ?? 'Not specified';
           images = userData['images'] ?? '';
           rescueLocation = userData['rescue_location'] ?? 'Not specified';
@@ -153,13 +153,13 @@ class _AdminPetProfilePage extends State<AdminPetProfilePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           _buildInfoCard(Icons.cake, 'Age', age),
-                          _buildInfoCard(Icons.monitor_weight, 'Weight', sizeweight),
+                          _buildInfoCard(Icons.monitor_weight, 'Weight', size),
                           _buildInfoCard(Icons.male, 'Sex', sex),
                         ],
                       ),
                       const SizedBox(height: 16),
                       _buildInfoRow(Icons.pets, 'Type', type),
-                      _buildInfoRow(Icons.category, 'Breed', breed),
+                      _buildInfoRow(Icons.category, 'pet_name', pet_name),
                       _buildInfoRow(Icons.color_lens, 'Color', color),
                       _buildInfoRow(Icons.calendar_today, 'Arrival Date', arrivaldate),
                       const SizedBox(height: 16),

@@ -131,15 +131,15 @@ class Services {
     }
   }
 
-  Future<void> createPet(String type, String breed, String age, String color, String arrivaldate, String sizeweight, String sex, String rescueLocation, String firstOwner, String healthIssues, String additionalDetails, String imageUrl) async {
+  Future<void> createPet(String type, String pet_name, String age, String color, String arrivaldate, String size, String sex, String rescueLocation, String firstOwner, String healthIssues, String additionalDetails, String imageUrl) async {
     try {
       await FirebaseFirestore.instance.collection('pet').add({
         'type': type,
-        'breed': breed,
+        'pet_name': pet_name,
         'age': age,
         'color': color,
         'arrivaldate': arrivaldate,
-        'sizeweight': sizeweight,
+        'size': size,
         'sex': sex,
         'rescue_location': rescueLocation,
         'first_owner': firstOwner,

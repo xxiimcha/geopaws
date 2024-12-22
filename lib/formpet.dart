@@ -27,11 +27,11 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
   final user = FirebaseAuth.instance.currentUser;
 
   final TextEditingController typeController = TextEditingController();
-  final TextEditingController breedController = TextEditingController();
+  final TextEditingController pet_nameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
   final TextEditingController colorController = TextEditingController();
   final TextEditingController arrivaldateController = TextEditingController();
-  final TextEditingController sizeweightController = TextEditingController();
+  final TextEditingController sizeController = TextEditingController();
   final TextEditingController sexController = TextEditingController();
 
   // New Controllers for additional information
@@ -164,11 +164,11 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
                       ),
                     ),
                     buildTextField('Type', typeController),
-                    buildTextField('Breed', breedController),
+                    buildTextField('pet_name', pet_nameController),
                     buildTextField('Age', ageController),
                     buildTextField('Color', colorController),
                     buildTextField('Arrival Date', arrivaldateController),
-                    buildTextField('Size Weight', sizeweightController),
+                    buildTextField('Size Weight', sizeController),
                     buildTextField('Sex', sexController),
                     buildTextField('Rescue Location', rescueLocationController),
                     buildTextField('First Owner', firstOwnerController),
@@ -190,11 +190,11 @@ class _AdminFormPetPageState extends State<AdminFormPetPage> {
                                 .doc()
                                 .set({
                               'type': typeController.text,
-                              'breed': breedController.text,
+                              'pet_name': pet_nameController.text,
                               'age': ageController.text,
                               'color': colorController.text,
                               'arrivaldate': arrivaldateController.text,
-                              'sizeweight': sizeweightController.text,
+                              'size': sizeController.text,
                               'sex': sexController.text,
                               'rescue_location': rescueLocationController.text,
                               'first_owner': firstOwnerController.text,

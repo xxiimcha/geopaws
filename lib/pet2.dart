@@ -98,7 +98,7 @@ class _PetPage extends State<PetPage> {
                   children: [
                     DropdownButton<String>(
                       value: selectedFilter,
-                      items: <String>['Type', 'Breed', 'Age', 'Color', 'Sex']
+                      items: <String>['Type', 'pet_name', 'Age', 'Color', 'Sex']
                           .map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -241,7 +241,7 @@ class _PetPage extends State<PetPage> {
                               .contains(appliedOption.toLowerCase());
                       final matchesSearch = searchText.isEmpty ||
                           (data['type'] ?? '').toString().toLowerCase().contains(searchText) ||
-                          (data['breed'] ?? '').toString().toLowerCase().contains(searchText);
+                          (data['pet_name'] ?? '').toString().toLowerCase().contains(searchText);
                       return matchesFilter && matchesSearch;
                     }).toList();
 
@@ -260,7 +260,7 @@ class _PetPage extends State<PetPage> {
                         final data = alldata[index];
                         // Access your fields from Firestore document
                         final type = data['type'] ?? 'Unnamed';
-                        final breed = data['breed'] ?? 'Unnamed';
+                        final pet_name = data['pet_name'] ?? 'Unnamed';
 
                         final docId = data.id; // Access the document ID here
                         // Assuming you have an image field in Firestore
@@ -313,7 +313,7 @@ class _PetPage extends State<PetPage> {
                                               ),
                                             ),
                                             Text(
-                                              breed,
+                                              pet_name,
                                               style: const TextStyle(
                                                 fontWeight: FontWeight.w500,
                                               ),

@@ -18,11 +18,11 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
   final _globalKey = GlobalKey<ScaffoldMessengerState>();
 
   String type = "";
-  String breed = "";
+  String pet_name = "";
   String age = "";
   String color = "";
   String arrivaldate = "";
-  String sizeweight = "";
+  String size = "";
   String sex = "";
   String petimages = "";
 
@@ -54,11 +54,11 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
 
         setState(() {
           type = userData['type'] ?? '';
-          breed = userData['breed'] ?? '';
+          pet_name = userData['pet_name'] ?? '';
           age = userData['age'] ?? '';
           color = userData['color'] ?? '';
           arrivaldate = userData['arrivaldate'] ?? '';
-          sizeweight = userData['sizeweight'] ?? '';
+          size = userData['size'] ?? '';
           sex = userData['sex'] ?? '';
           petimages = userData['images'] ?? '';
         });
@@ -175,11 +175,11 @@ class _AdminViewRequestPage extends State<AdminViewRequestPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 _buildInfoRow('Type', type),
-                _buildInfoRow('Breed', breed),
+                _buildInfoRow('pet_name', pet_name),
                 _buildInfoRow('Age', age),
                 _buildInfoRow('Color', color),
                 _buildInfoRow('Arrival Date', arrivaldate),
-                _buildInfoRow('Size Weight', sizeweight),
+                _buildInfoRow('Size Weight', size),
                 _buildInfoRow('Sex', sex),
               ],
             ),

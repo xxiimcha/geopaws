@@ -12,7 +12,12 @@
           "package_name": "com.example.geopaws"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1006948978372-st7fi7iv5l8kgb0coiqgeoa40eid3ul6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA_4XuygsUNR-Xlc4nhqNNaGVa7ZZqJ260"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006948978372-st7fi7iv5l8kgb0coiqgeoa40eid3ul6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1006948978372-83pak854e3tlc8ge2ijkut2nqgqlitav.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.geopaws"
+              }
+            }
+          ]
         }
       }
     },
@@ -31,7 +48,20 @@
           "package_name": "com.example.geopawsfinal"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1006948978372-d77ahikdofnflda2o1i7n03bomhu1qk7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.geopawsfinal",
+            "certificate_hash": "3c72edb8bf424beec9781f7a25f0ba26f3dc441a"
+          }
+        },
+        {
+          "client_id": "1006948978372-st7fi7iv5l8kgb0coiqgeoa40eid3ul6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA_4XuygsUNR-Xlc4nhqNNaGVa7ZZqJ260"
@@ -39,7 +69,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1006948978372-st7fi7iv5l8kgb0coiqgeoa40eid3ul6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1006948978372-83pak854e3tlc8ge2ijkut2nqgqlitav.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.geopaws"
+              }
+            }
+          ]
         }
       }
     }

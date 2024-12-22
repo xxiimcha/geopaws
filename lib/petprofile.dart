@@ -16,11 +16,11 @@ class _PetProfilePage extends State<PetProfilePage> {
   final _globalKey = GlobalKey<ScaffoldMessengerState>();
 
   String type = "";
-  String breed = "";
+  String pet_name = "";
   String age = "";
   String color = "";
   String arrivaldate = "";
-  String sizeweight = "";
+  String size = "";
   String sex = "";
   String images = "";
   String rescueLocation = "";
@@ -48,11 +48,11 @@ class _PetProfilePage extends State<PetProfilePage> {
 
         setState(() {
           type = userData['type'] ?? '';
-          breed = userData['breed'] ?? '';
+          pet_name = userData['pet_name'] ?? '';
           age = userData['age'] ?? '';
           color = userData['color'] ?? '';
           arrivaldate = userData['arrivaldate'] ?? '';
-          sizeweight = userData['sizeweight'] ?? '';
+          size = userData['size'] ?? '';
           sex = userData['sex'] ?? '';
           images = userData['images'] ?? '';
           rescueLocation = userData['rescue_location'] ?? '';
@@ -150,13 +150,13 @@ class _PetProfilePage extends State<PetProfilePage> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               _buildInfoCard('Age', age),
-                              _buildInfoCard('Weight', sizeweight),
+                              _buildInfoCard('Weight', size),
                               _buildInfoCard('Sex', sex),
                             ],
                           ),
                           const SizedBox(height: 16),
                           _buildInfoRow('Type', type),
-                          _buildInfoRow('Breed', breed),
+                          _buildInfoRow('pet_name', pet_name),
                           _buildInfoRow('Color', color),
                           _buildInfoRow('Arrival Date', arrivaldate),
                           const SizedBox(height: 16),

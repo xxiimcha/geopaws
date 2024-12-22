@@ -89,7 +89,7 @@ class _AdminPetPage extends State<AdminPetPage> {
                   children: [
                     DropdownButton<String>(
                       value: selectedFilter,
-                      items: <String>['Type', 'Breed', 'Age', 'Color', 'Sex']
+                      items: <String>['Type', 'pet_name', 'Age', 'Color', 'Sex']
                           .map((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
@@ -276,7 +276,7 @@ class _AdminPetPage extends State<AdminPetPage> {
                               .contains(appliedOption.toLowerCase());
                       final matchesSearch = searchQuery.isEmpty ||
                           (data['type'] ?? '').toString().toLowerCase().contains(searchQuery) ||
-                          (data['breed'] ?? '').toString().toLowerCase().contains(searchQuery);
+                          (data['pet_name'] ?? '').toString().toLowerCase().contains(searchQuery);
                       return matchesFilter && matchesSearch;
                     }).toList();
 
@@ -287,7 +287,7 @@ class _AdminPetPage extends State<AdminPetPage> {
                       itemBuilder: (context, index) {
                         final data = filteredData[index];
                         final type = data['type'] ?? 'Unnamed';
-                        final breed = data['breed'] ?? 'Unnamed';
+                        final pet_name = data['pet_name'] ?? 'Unnamed';
                         final docId = data.id;
 
                         return Container(
@@ -336,7 +336,7 @@ class _AdminPetPage extends State<AdminPetPage> {
                                           ),
                                         ),
                                         Text(
-                                          breed,
+                                          pet_name,
                                           style: const TextStyle(
                                             fontWeight: FontWeight.w500,
                                           ),

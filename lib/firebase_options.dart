@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -66,15 +63,29 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1006948978372',
     projectId: 'geopaws-eaf88',
     storageBucket: 'geopaws-eaf88.appspot.com',
+    androidClientId: '1006948978372-d77ahikdofnflda2o1i7n03bomhu1qk7.apps.googleusercontent.com',
+    iosClientId: '1006948978372-vk4acdc0uaul15f5qjq4nmmm1t5clo0p.apps.googleusercontent.com',
     iosBundleId: 'com.example.geopawsfinal',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyA9sI6gqJsOJDdIcXPhQnxugjHBIDyvJrU',
-    appId: '1:1006948978372:ios:9e09d2c220d244fdc8c391',
+    appId: '1:1006948978372:ios:c4b177dedfabd250c8c391',
     messagingSenderId: '1006948978372',
     projectId: 'geopaws-eaf88',
     storageBucket: 'geopaws-eaf88.appspot.com',
-    iosBundleId: 'com.example.geopawsfinal.RunnerTests',
+    androidClientId: '1006948978372-d77ahikdofnflda2o1i7n03bomhu1qk7.apps.googleusercontent.com',
+    iosClientId: '1006948978372-vk4acdc0uaul15f5qjq4nmmm1t5clo0p.apps.googleusercontent.com',
+    iosBundleId: 'com.example.geopawsfinal',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyB5l48633qxYx_oYRuKQThuvsXMHnlB6HQ',
+    appId: '1:1006948978372:web:e7b352be015cb1f8c8c391',
+    messagingSenderId: '1006948978372',
+    projectId: 'geopaws-eaf88',
+    authDomain: 'geopaws-eaf88.firebaseapp.com',
+    storageBucket: 'geopaws-eaf88.appspot.com',
+  );
+
 }
