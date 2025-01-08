@@ -90,6 +90,10 @@ class _WelcomePage extends State<WelcomePage> {
               _sectionHeader('Approved'),
               const SizedBox(height: 10),
               _buildRequestSection('Approved'),
+              const SizedBox(height: 20),
+              _sectionHeader('Reports'),
+              const SizedBox(height: 10),
+              _buildReportsSection(),
               const SizedBox(height: 30),
             ],
           ),
@@ -223,6 +227,7 @@ class _WelcomePage extends State<WelcomePage> {
     );
   }
 
+  
   Widget _buildRequestCard(
       dynamic data, String fullname, String petId, String uid, String docId, String status) {
     return Container(
@@ -298,4 +303,124 @@ class _WelcomePage extends State<WelcomePage> {
       ),
     );
   }
+
+
+Widget _buildReportsSection() {
+  return StreamBuilder(
+    stream: FirebaseFirestore.instance
+        .collection('pet_reports')
+        .where('user', isEqualTo: user!.email) // Match logged-in user's email
+        .snapshots(),
+    builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      }
+      if (!snapshot.hasData || snapshot.data == null) {
+        return const Center(
+          child: Text('No reports available'),
+        );
+      }
+      final reportData = snapshot.data!.docs;
+      if (reportData.isEmpty) {
+        return const Center(
+          child: Text('No reports submitted by you'),
+        );
+      }
+      return ListView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        itemCount: reportData.length,
+        itemBuilder: (context, index) {
+          final report = reportData[index];
+          final petName = report['pet_name'] ?? 'Unknown Pet';
+          final dateLost = report['date_lost'] ?? 'Unknown Date';
+          final status = report['status'] ?? 'Unknown Status';
+          final locationLost = report['location_lost'] ?? 'Unknown Location';
+          final image = report['image'] ?? '';
+
+          return _buildReportCard(
+            petName,
+            dateLost,
+            status,
+            locationLost,
+            image,
+          );
+        },
+      );
+    },
+  );
+}
+
+Widget _buildReportCard(
+  String petName,
+  String dateLost,
+  String status,
+  String locationLost,
+  String image,
+) {
+  return Container(
+    margin: const EdgeInsets.only(top: 8),
+    padding: const EdgeInsets.all(10),
+    decoration: BoxDecoration(
+      color: const Color.fromARGB(255, 225, 237, 255),
+      borderRadius: BorderRadius.circular(15),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.2),
+          spreadRadius: 2,
+          blurRadius: 5,
+        )
+      ],
+    ),
+    child: Row(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.lightBlue,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(
+              image,
+              width: 60,
+              height: 60,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset('assets/p1.png', width: 60, height: 60);
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                petName,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              Text('Date Lost: $dateLost'),
+              Text('Location: $locationLost'),
+              Text(
+                'Status: $status',
+                style: TextStyle(
+                  color: status == 'In Progress' ? Colors.orange : Colors.green,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
 }

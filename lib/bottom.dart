@@ -1,4 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geopawsfinal/feedback.dart';
@@ -121,52 +123,93 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
             unselectedFontSize: 13,
             selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
             unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-
-            items: const <BottomNavigationBarItem>[
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(
+                icon: const Icon(
                   Icons.home,
                   size: 25,
                 ),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(
+                icon: const FaIcon(
                   FontAwesomeIcons.paw,
                   size: 25,
                 ),
                 label: 'Pet',
               ),
               BottomNavigationBarItem(
-                icon: Icon(
+                icon: const Icon(
                   Icons.sms,
                   size: 25,
                 ),
                 label: 'Chat',
               ),
               BottomNavigationBarItem(
-                icon: Icon(
+                icon: const Icon(
                   Icons.person,
                   size: 25,
                 ),
                 label: 'Profile',
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(
+                icon: const FaIcon(
                   FontAwesomeIcons.commentDots,
                   size: 25,
                 ),
                 label: 'Feedback',
               ),
               BottomNavigationBarItem(
-                icon: FaIcon(
-                  FontAwesomeIcons.fileAlt,
-                  size: 25,
+                icon: Stack(
+                  clipBehavior: Clip.none, // Allows the badge to overflow the icon
+                  children: [
+                    FaIcon(
+                      FontAwesomeIcons.fileAlt,
+                      size: 25,
+                    ),
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('pet_reports')
+                          .where('status', isNotEqualTo: 'In Progress') // Exclude "In Progress"
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const SizedBox(); // Show nothing while loading
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const SizedBox(); // Show nothing if no reports
+                        }
+
+                        final count = snapshot.data!.docs.length;
+
+                        return Positioned(
+                          top: -5, // Adjust position to tightly fit the icon
+                          right: -5,
+                          child: Container(
+                            padding: const EdgeInsets.all(4), // Inner padding for the badge
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              '$count', // Dynamic count from the database
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10, // Small font for the count
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                label: 'Report',  // New Report item
+                label: 'Report',
               ),
               BottomNavigationBarItem(
-                icon: Icon(
+                icon: const Icon(
                   Icons.logout,
                   size: 25,
                 ),
@@ -176,9 +219,10 @@ class MainAppwidgetfooter extends State<MainAppwidget> {
             currentIndex: selectedindex,
             type: BottomNavigationBarType.fixed,
             onTap: onitemtapped,
-            backgroundColor: Colors.transparent, // Set to transparent to see the BottomAppBar color
-            elevation: 0, // Remove top shadow color
+            backgroundColor: Colors.transparent,
+            elevation: 0,
           ),
+
         ),
       ),
     );
