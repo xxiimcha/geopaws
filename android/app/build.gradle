@@ -55,7 +55,7 @@ android {
 
      signingConfigs {
        release {
-           storeFile file('E:/Dev Projects/Flutter/keystore/key.jks')
+            storeFile file("key.jks") // Ensure the path is relative to this file
             storePassword '123456'
             keyAlias = 'geopaws'
             keyPassword '123456'
