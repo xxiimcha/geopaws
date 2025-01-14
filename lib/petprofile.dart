@@ -160,7 +160,6 @@ class _PetProfilePage extends State<PetProfilePage> {
                           _buildInfoRow('Color', color),
                           _buildInfoRow('Arrival Date', arrivaldate),
                           const SizedBox(height: 16),
-                          _buildInfoRow('Rescue Location', rescueLocation),
                           _buildInfoRow('Health Issues', healthIssues),
                           _buildInfoRow('Additional Details', additionalDetails),
                         ],
